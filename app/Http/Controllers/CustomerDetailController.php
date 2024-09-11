@@ -36,16 +36,16 @@ class CustomerDetailController extends Controller
     {
         $data = $request->validated();
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
-
+    
         try {
-
+            
             $customerDetail = $this->customerDetailRepository->create($data);
-
+    
             if ($productInfoData) {
                 $productInfo = new ProductInfo($productInfoData);
                 $customerDetail->productInfos()->save($productInfo);
             }
-
+    
             return $this->responseSuccess($customerDetail, 'Customer detail and product information created successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
@@ -75,7 +75,6 @@ class CustomerDetailController extends Controller
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
-
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
 
             if ($productInfoData) {
@@ -83,6 +82,7 @@ class CustomerDetailController extends Controller
                 if ($productInfo) {
                     $productInfo->update($productInfoData);
                 } else {
+        
                     $newProductInfo = new ProductInfo($productInfoData);
                     $updatedCustomerDetail->productInfos()->save($newProductInfo);
                 }
@@ -95,6 +95,7 @@ class CustomerDetailController extends Controller
             return $this->responseError([], $exception->getMessage(), $exception->getCode() ?: 500);
         }
     }
+
 
     public function destroy(int $id): JsonResponse
     {

@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('customer_details', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->unique(); // Make 'code' unique
+            $table->string('code')->unique(); // unique 'code'
             $table->string('first_name', 255);
             $table->string('last_name', 255);
             $table->string('phone_number', 20);
@@ -24,19 +24,18 @@ return new class extends Migration
 
         Schema::create('product_infos', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('customer_detail_id'); // Foreign key
+            $table->unsignedBigInteger('customer_detail_id');
             $table->string('brand', 255);
             $table->string('model', 255);
-            $table->string('serial_number', 20);
+            $table->string('serial_number', 20)->unique();
             $table->date('purchase_date');
             $table->string('status')->default('pending');
             $table->timestamps();
-        
-            // Foreign key constraint
+            
             $table->foreign('customer_detail_id')
                   ->references('id')->on('customer_details')
                   ->onDelete('cascade');
-        });
+        });        
     }
 
     /**

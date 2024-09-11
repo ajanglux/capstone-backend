@@ -23,6 +23,6 @@ class ProductInfo extends Model
      */
     public function customerDetail()
     {
-        return $this->belongsTo(CustomerDetail::class);
+        return $this->belongsTo(CustomerDetail::class, 'customer_detail_id');
     }
 }

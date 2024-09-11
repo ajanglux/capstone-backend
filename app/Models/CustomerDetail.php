@@ -29,10 +29,11 @@ class CustomerDetail extends Model
     }
 
     /**
-     * Get the product info associated with the customer detail.
+     * Get the product infos associated with the customer detail.
      */
-    public function productInfo()
+    public function productInfos()
     {
-        return $this->hasOne(ProductInfo::class);
+        return $this->hasMany(ProductInfo::class, 'customer_detail_id');
     }
 }
+
