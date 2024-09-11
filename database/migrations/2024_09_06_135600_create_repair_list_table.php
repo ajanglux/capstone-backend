@@ -24,11 +24,18 @@ return new class extends Migration
 
         Schema::create('product_infos', function (Blueprint $table) {
             $table->id();
+            $table->unsignedBigInteger('customer_detail_id'); // Foreign key
             $table->string('brand', 255);
             $table->string('model', 255);
             $table->string('serial_number', 20);
             $table->date('purchase_date');
             $table->string('status')->default('pending');
+            $table->timestamps();
+        
+            // Foreign key constraint
+            $table->foreign('customer_detail_id')
+                  ->references('id')->on('customer_details')
+                  ->onDelete('cascade');
         });
     }
 

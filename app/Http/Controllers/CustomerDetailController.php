@@ -9,6 +9,7 @@ use App\Traits\ResponseTrait;
 use App\Repositories\CustomerDetailRepository;
 use App\Http\Requests\CustomerDetailRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use App\Models\ProductInfo;
 
 class CustomerDetailController extends Controller
 {
@@ -34,10 +35,18 @@ class CustomerDetailController extends Controller
     public function store(CustomerDetailRequest $request): JsonResponse
     {
         $data = $request->validated();
+        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
+
             $customerDetail = $this->customerDetailRepository->create($data);
-            return $this->responseSuccess($customerDetail, 'Customer detail created successfully.');
+
+            if ($productInfoData) {
+                $productInfo = new ProductInfo($productInfoData);
+                $customerDetail->productInfos()->save($productInfo);
+            }
+
+            return $this->responseSuccess($customerDetail, 'Customer detail and product information created successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -63,15 +72,23 @@ class CustomerDetailController extends Controller
     public function update(CustomerDetailRequest $request, int $id): JsonResponse
     {
         $data = $request->validated();
+        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
+
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
 
-            if ($updatedCustomerDetail) {
-                return $this->responseSuccess($updatedCustomerDetail, 'Customer detail updated successfully.');
-            } else {
-                return $this->responseError([], 'Customer detail not updated. Please try again.', 500);
+            if ($productInfoData) {
+                $productInfo = ProductInfo::where('customer_detail_id', $id)->first();
+                if ($productInfo) {
+                    $productInfo->update($productInfoData);
+                } else {
+                    $newProductInfo = new ProductInfo($productInfoData);
+                    $updatedCustomerDetail->productInfos()->save($newProductInfo);
+                }
             }
+
+            return $this->responseSuccess($updatedCustomerDetail, 'Customer detail and product information updated successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
         } catch (Exception $exception) {

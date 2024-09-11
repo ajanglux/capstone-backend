@@ -14,7 +14,7 @@ class ServiceListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service_title' => 'required|string|max:255', // Add max length validation
+            'service_title' => 'required|string|max:255',
             'description' => 'nullable|string',
         ];
     }

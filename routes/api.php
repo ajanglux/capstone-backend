@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ServiceListController;
 use App\Http\Controllers\CustomerDetailController;
+use App\Http\Controllers\ProductInfoController;
 
-// Routes that require authentication
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', function (Request $request) {
         return [
@@ -33,6 +33,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/', [CustomerDetailController::class, 'store'])->name('customer-details.store');
         Route::put('{id}', [CustomerDetailController::class, 'update'])->whereNumber('id')->name('customer-details.update');
         Route::delete('{id}', [CustomerDetailController::class, 'destroy'])->whereNumber('id')->name('customer-details.destroy');
+    });
+
+    // Product Info routes
+    Route::prefix('product-infos')->group(function () {
+        Route::get('/', [ProductInfoController::class, 'index'])->name('product-infos.index');
+        Route::get('{id}', [ProductInfoController::class, 'show'])->whereNumber('id')->name('product-infos.show');
+        Route::post('/', [ProductInfoController::class, 'store'])->name('product-infos.store');
+        Route::put('{id}', [ProductInfoController::class, 'update'])->whereNumber('id')->name('product-infos.update');
+        Route::delete('{id}', [ProductInfoController::class, 'destroy'])->whereNumber('id')->name('product-infos.destroy');
     });
 });
 

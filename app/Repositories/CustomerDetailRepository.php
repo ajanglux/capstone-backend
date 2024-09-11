@@ -7,10 +7,9 @@ use App\Interfaces\CustomerDetailInterface;
 
 class CustomerDetailRepository implements CustomerDetailInterface
 {
-    // Retrieve all customer details and convert them to an array
     public function getAll(): array
     {
-        return CustomerDetail::all()->toArray(); // Convert collection to array
+        return CustomerDetail::all()->toArray();
     }
 
     public function create(array $data): object|null

@@ -4,7 +4,7 @@ namespace App\Interfaces;
 
 interface CustomerDetailInterface
 {
-    public function getAll(): array; // Updated to return an array instead of Paginator
+    public function getAll(): array; 
 
     public function create(array $data): object|null;
 

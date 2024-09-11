@@ -9,7 +9,7 @@ class ServiceList extends Model
 {
     use HasFactory;
 
-    protected $table = 'services'; // Updated to match migration
+    protected $table = 'services';
 
     protected $fillable = [
         'service_title',

@@ -27,4 +27,12 @@ class CustomerDetail extends Model
             }
         });
     }
+
+    /**
+     * Get the product info associated with the customer detail.
+     */
+    public function productInfo()
+    {
+        return $this->hasOne(ProductInfo::class);
+    }
 }

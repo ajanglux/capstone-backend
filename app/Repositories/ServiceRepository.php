@@ -15,7 +15,7 @@ class ServiceRepository implements ServiceInterface
     public function getAll(): array
     {
         try {
-            return ServiceList::all()->toArray();  // Fetch all services
+            return ServiceList::all()->toArray();
         } catch (Exception $exception) {
             Log::error('Error fetching services: '.$exception->getMessage());
             throw $exception;
