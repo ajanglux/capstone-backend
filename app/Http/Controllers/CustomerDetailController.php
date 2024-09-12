@@ -36,17 +36,17 @@ class CustomerDetailController extends Controller
     {
         $data = $request->validated();
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
-    
+
         try {
             
             $customerDetail = $this->customerDetailRepository->create($data);
-    
-            if ($productInfoData) {
+
+            if (!empty($productInfoData)) {
                 $productInfo = new ProductInfo($productInfoData);
                 $customerDetail->productInfos()->save($productInfo);
             }
-    
-            return $this->responseSuccess($customerDetail, 'Customer detail and product information created successfully.');
+
+            return $this->responseSuccess($customerDetail, 'Customer detail created successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -71,24 +71,24 @@ class CustomerDetailController extends Controller
 
     public function update(CustomerDetailRequest $request, int $id): JsonResponse
     {
-        $data = $request->validated();
+        $data = $request->validated(); 
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
+            
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
 
-            if ($productInfoData) {
+            if (!empty($productInfoData)) {
                 $productInfo = ProductInfo::where('customer_detail_id', $id)->first();
                 if ($productInfo) {
                     $productInfo->update($productInfoData);
                 } else {
-        
                     $newProductInfo = new ProductInfo($productInfoData);
                     $updatedCustomerDetail->productInfos()->save($newProductInfo);
                 }
             }
 
-            return $this->responseSuccess($updatedCustomerDetail, 'Customer detail and product information updated successfully.');
+            return $this->responseSuccess($updatedCustomerDetail, 'Customer detail updated successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
         } catch (Exception $exception) {
@@ -107,6 +107,30 @@ class CustomerDetailController extends Controller
             } else {
                 return $this->responseError([], 'Customer detail not found.', 404);
             }
+        } catch (Exception $exception) {
+            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+        }
+    }
+
+    public function updateStatus(Request $request, int $id): JsonResponse
+    {
+        
+        $validatedData = $request->validate([
+            'status' => 'required|string',
+        ]);
+
+        try {
+          
+            $customerDetail = $this->customerDetailRepository->getById($id);
+
+            if (!$customerDetail) {
+                return $this->responseError([], 'Customer detail not found.', 404);
+            }
+
+            $customerDetail->status = $validatedData['status'];
+            $customerDetail->save();
+
+            return $this->responseSuccess($customerDetail, 'Status updated successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }

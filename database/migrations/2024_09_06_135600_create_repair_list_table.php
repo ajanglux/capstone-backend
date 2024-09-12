@@ -19,6 +19,7 @@ return new class extends Migration
             $table->string('phone_number', 20);
             $table->string('email')->nullable();
             $table->string('address', 255);
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
 
@@ -29,7 +30,7 @@ return new class extends Migration
             $table->string('model', 255);
             $table->string('serial_number', 20)->unique();
             $table->date('purchase_date');
-            $table->string('status')->default('pending');
+            $table->string('warranty_status')->default('warranty');
             $table->timestamps();
             
             $table->foreign('customer_detail_id')

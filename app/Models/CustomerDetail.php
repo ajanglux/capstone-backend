@@ -17,6 +17,7 @@ class CustomerDetail extends Model
         'phone_number',
         'email',
         'address',
+        'status',
     ];
 
     protected static function booted()
@@ -28,12 +29,8 @@ class CustomerDetail extends Model
         });
     }
 
-    /**
-     * Get the product infos associated with the customer detail.
-     */
     public function productInfos()
     {
         return $this->hasMany(ProductInfo::class, 'customer_detail_id');
     }
 }
-

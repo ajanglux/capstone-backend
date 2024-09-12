@@ -17,6 +17,7 @@ class CustomerDetailRepository implements CustomerDetailInterface
         return CustomerDetail::create($data);
     }
 
+
     public function getById(int $id): object|null
     {
         return CustomerDetail::find($id);
