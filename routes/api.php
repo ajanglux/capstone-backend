@@ -21,8 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Service List
     Route::prefix('services')->group(function () {
-        Route::get('/', [ServiceListController::class, 'index'])->name('services.index');
-        Route::get('{id}', [ServiceListController::class, 'show'])->whereNumber('id')->name('services.show');
         Route::post('/', [ServiceListController::class, 'store'])->name('services.store');
         Route::put('{id}', [ServiceListController::class, 'update'])->whereNumber('id')->name('services.update');
         Route::delete('{id}', [ServiceListController::class, 'destroy'])->whereNumber('id')->name('services.destroy');
@@ -46,6 +44,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::patch('{id}', [CustomerDetailController::class, 'update'])->name('customer-details.patch');
     });
 });
+
+// Publicly accessible routes for viewing services
+Route::get('services', [ServiceListController::class, 'index'])->name('services.index');
+Route::get('services/{id}', [ServiceListController::class, 'show'])->whereNumber('id')->name('services.show');
 
 // Public Customer Detail store route
 Route::post('customer-details', [CustomerDetailController::class, 'store'])->name('customer-details.store');

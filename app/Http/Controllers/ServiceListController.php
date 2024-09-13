@@ -43,15 +43,20 @@ class ServiceListController extends Controller
     {
         $data = $request->validated();
 
+        // Handle image upload
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('services', 'public'); // Store the image in public/services
+            $data['image'] = $imagePath; // Save image path in the database
+        }
+
         try {
             $service = $this->serviceRepository->create($data);
             return $this->responseSuccess($service, 'Service created successfully.');
         } catch (Exception $exception) {
-            // Log the error for debugging
-            \Log::error('Error creating service: '.$exception->getMessage());
+            \Log::error('Error creating service: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to create service.', 500);
         }
-    }
+    } 
 
     /**
      * Display the specified resource.
@@ -60,20 +65,18 @@ class ServiceListController extends Controller
     {
         try {
             $service = $this->serviceRepository->getById($id);
-            
-            if (!$service) {
-                throw new ModelNotFoundException('Service not found.');
+    
+            // Add the full image URL if it exists
+            if ($service && $service->image) {
+                $service->image_url = url('storage/' . $service->image); // Full URL to the image
             }
-
+    
             return $this->responseSuccess($service, 'Service fetched successfully.');
-        } catch (ModelNotFoundException $exception) {
-            \Log::error('Service not found: '.$exception->getMessage());
-            return $this->responseError([], 'Service not found.', 404);
         } catch (Exception $exception) {
-            \Log::error('Error fetching service: '.$exception->getMessage());
+            \Log::error('Error fetching service: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to fetch service.', 500);
         }
-    }
+    }    
 
     /**
      * Update the specified resource in storage.
@@ -82,19 +85,17 @@ class ServiceListController extends Controller
     {
         $data = $request->validated();
 
+        // Handle image upload for update
+        if ($request->hasFile('image')) {
+            $imagePath = $request->file('image')->store('services', 'public');
+            $data['image'] = $imagePath;
+        }
+
         try {
             $updatedService = $this->serviceRepository->update($id, $data);
-
-            if (!$updatedService) {
-                throw new ModelNotFoundException('Service not found for update.');
-            }
-
             return $this->responseSuccess($updatedService, 'Service updated successfully.');
-        } catch (ModelNotFoundException $exception) {
-            \Log::error('Service not found for update: '.$exception->getMessage());
-            return $this->responseError([], 'Service not found.', 404);
         } catch (Exception $exception) {
-            \Log::error('Error updating service: '.$exception->getMessage());
+            \Log::error('Error updating service: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to update service.', 500);
         }
     }

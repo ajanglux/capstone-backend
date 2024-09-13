@@ -14,5 +14,6 @@ class ServiceList extends Model
     protected $fillable = [
         'service_title',
         'description',
+        'image',
     ];
 }

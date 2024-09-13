@@ -16,8 +16,12 @@ class ProductInfoController extends Controller
 
     public function store(ProductInfoRequest $request)
     {
-        $productInfo = ProductInfo::create($request->validated());
-        return response()->json($productInfo, 201);
+        try {
+            $productInfo = ProductInfo::create($request->validated());
+            return response()->json($productInfo, 201);
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            return response()->json(['errors' => $e->errors()], 422);
+        }
     }
 
     public function show($id)
@@ -29,6 +33,7 @@ class ProductInfoController extends Controller
     public function update(ProductInfoRequest $request, $id)
     {
         $productInfo = ProductInfo::findOrFail($id);
+        
         $productInfo->update($request->validated());
         return response()->json($productInfo, 200);
     }
