@@ -5,67 +5,76 @@ namespace App\Repositories;
 use App\Models\ServiceList;
 use App\Interfaces\ServiceInterface;
 use Exception;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Log;
 
 class ServiceRepository implements ServiceInterface
 {
-    /**
-     * Get all services without pagination.
-     */
-    public function getAll(): array
+    public function getAll(): Collection
     {
         try {
-            return ServiceList::all()->toArray();
+
+            $services = ServiceList::all();
+
+            $services = $services->map(function ($service) {
+                if ($service->image) {
+                    $service->image_url = url('storage/' . $service->image);
+                } else {
+                    $service->image_url = null;
+                }
+                return $service;
+            });
+
+            return $services;
         } catch (Exception $exception) {
-            Log::error('Error fetching services: '.$exception->getMessage());
+            Log::error('Error fetching services: ' . $exception->getMessage());
             throw $exception;
         }
     }
 
-    /**
-     * Create a new service.
-     */
     public function create(array $data): ?object
     {
         try {
             return ServiceList::create($data);
         } catch (Exception $exception) {
-            Log::error('Error creating service: '.$exception->getMessage());
+            Log::error('Error creating service: ' . $exception->getMessage());
             throw $exception;
         }
     }
 
-    /**
-     * Get a service by ID.
-     */
     public function getById(int $id): ?object
     {
         try {
-            return ServiceList::findOrFail($id);
+            $service = ServiceList::findOrFail($id);
+
+            if ($service->image) {
+                $service->image_url = url('storage/' . $service->image);
+            }
+
+            return $service;
         } catch (Exception $exception) {
-            Log::error('Error fetching service by ID: '.$exception->getMessage());
+            Log::error('Error fetching service by ID: ' . $exception->getMessage());
             throw $exception;
         }
     }
 
-    /**
-     * Update an existing service by ID.
-     */
     public function update(int $id, array $data): ?object
     {
         try {
             $service = ServiceList::findOrFail($id);
             $service->update($data);
+
+            if (isset($data['image']) && $data['image']) {
+                $service->image_url = url('storage/' . $data['image']);
+            }
+
             return $service;
         } catch (Exception $exception) {
-            Log::error('Error updating service: '.$exception->getMessage());
+            Log::error('Error updating service: ' . $exception->getMessage());
             throw $exception;
         }
     }
 
-    /**
-     * Delete a service by ID.
-     */
     public function delete(int $id): ?object
     {
         try {
@@ -73,7 +82,7 @@ class ServiceRepository implements ServiceInterface
             $service->delete();
             return $service;
         } catch (Exception $exception) {
-            Log::error('Error deleting service: '.$exception->getMessage());
+            Log::error('Error deleting service: ' . $exception->getMessage());
             throw $exception;
         }
     }

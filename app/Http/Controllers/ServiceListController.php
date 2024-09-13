@@ -21,32 +21,33 @@ class ServiceListController extends Controller
         $this->serviceRepository = $serviceRepository;
     }
 
-    /**
-     * Display a listing of all services.
-     */
     public function index(): JsonResponse
     {
         try {
+
             $services = $this->serviceRepository->getAll();
+
+            $services = $services->map(function ($service) {
+                if ($service->image) {
+                    $service->image_url = url('storage/' . $service->image);
+                }
+                return $service;
+            });
+
             return $this->responseSuccess($services, 'Services fetched successfully.');
         } catch (Exception $exception) {
-            \Log::error('Error fetching services: '.$exception->getMessage());
+            \Log::error('Error fetching services: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to fetch services.', 500);
         }
     }
 
-
-    /**
-     * Store a newly created resource in storage.
-     */
     public function store(ServiceListRequest $request): JsonResponse
     {
         $data = $request->validated();
 
-        // Handle image upload
         if ($request->hasFile('image')) {
-            $imagePath = $request->file('image')->store('services', 'public'); // Store the image in public/services
-            $data['image'] = $imagePath; // Save image path in the database
+            $imagePath = $request->file('image')->store('services', 'public');
+            $data['image'] = $imagePath;
         }
 
         try {
@@ -56,36 +57,28 @@ class ServiceListController extends Controller
             \Log::error('Error creating service: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to create service.', 500);
         }
-    } 
+    }
 
-    /**
-     * Display the specified resource.
-     */
     public function show(int $id): JsonResponse
     {
         try {
             $service = $this->serviceRepository->getById($id);
-    
-            // Add the full image URL if it exists
+
             if ($service && $service->image) {
-                $service->image_url = url('storage/' . $service->image); // Full URL to the image
+                $service->image_url = url('storage/' . $service->image);
             }
-    
+
             return $this->responseSuccess($service, 'Service fetched successfully.');
         } catch (Exception $exception) {
             \Log::error('Error fetching service: ' . $exception->getMessage());
             return $this->responseError([], 'Unable to fetch service.', 500);
         }
-    }    
-
-    /**
-     * Update the specified resource in storage.
-     */
+    }
+ 
     public function update(ServiceListRequest $request, int $id): JsonResponse
     {
         $data = $request->validated();
 
-        // Handle image upload for update
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('services', 'public');
             $data['image'] = $imagePath;
@@ -100,9 +93,6 @@ class ServiceListController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy(int $id): JsonResponse
     {
         try {

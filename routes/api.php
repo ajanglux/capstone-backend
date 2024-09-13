@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ServiceListController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\ProductInfoController;
+use App\Http\Controllers\AdminDashboardController;
 
 // Routes requiring authentication
 Route::middleware('auth:sanctum')->group(function () {
@@ -43,9 +44,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{id}', [CustomerDetailController::class, 'destroy'])->name('customer-details.destroy');
         Route::patch('{id}', [CustomerDetailController::class, 'update'])->name('customer-details.patch');
     });
+
+    // Admin Dashboard
+    Route::get('admin-dashboard-stats', [AdminDashboardController::class, 'getDashboardStats'])->name('admin-dashboard.stats');
+
 });
 
-// Publicly accessible routes for viewing services
+// Publicly access for services
 Route::get('services', [ServiceListController::class, 'index'])->name('services.index');
 Route::get('services/{id}', [ServiceListController::class, 'show'])->whereNumber('id')->name('services.show');
 
