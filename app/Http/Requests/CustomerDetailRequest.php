@@ -19,7 +19,7 @@ class CustomerDetailRequest extends FormRequest
             'phone_number' => 'nullable|string|max:20',
             'email' => 'nullable|email',
             'address' => 'nullable|string|max:255',
-            'status' => 'sometimes|string|in:pending,on-going,approved,declined',
+            'status' => 'sometimes|string|in:pending,on-going,finished,completed',
         ];
     }
 }

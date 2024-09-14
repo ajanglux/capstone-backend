@@ -38,7 +38,6 @@ class CustomerDetailController extends Controller
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
-            
             $customerDetail = $this->customerDetailRepository->create($data);
 
             if (!empty($productInfoData)) {
@@ -71,11 +70,10 @@ class CustomerDetailController extends Controller
 
     public function update(CustomerDetailRequest $request, int $id): JsonResponse
     {
-        $data = $request->validated(); 
+        $data = $request->validated();
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
 
         try {
-            
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
 
             if (!empty($productInfoData)) {
@@ -96,7 +94,6 @@ class CustomerDetailController extends Controller
         }
     }
 
-
     public function destroy(int $id): JsonResponse
     {
         try {
@@ -114,13 +111,11 @@ class CustomerDetailController extends Controller
 
     public function updateStatus(Request $request, int $id): JsonResponse
     {
-        
         $validatedData = $request->validate([
-            'status' => 'required|string',
+            'status' => 'required|string|in:pending,on-going,finished,completed',
         ]);
 
         try {
-          
             $customerDetail = $this->customerDetailRepository->getById($id);
 
             if (!$customerDetail) {

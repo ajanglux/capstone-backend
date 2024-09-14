@@ -40,14 +40,14 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::prefix('customer-details')->group(function () {
         Route::get('/', [CustomerDetailController::class, 'index'])->name('customer-details.index');
         Route::get('{id}', [CustomerDetailController::class, 'show'])->whereNumber('id')->name('customer-details.show');
+        Route::post('/', [CustomerDetailController::class, 'store'])->name('customer-details.store');
         Route::put('{id}', [CustomerDetailController::class, 'update'])->name('customer-details.update');
         Route::delete('{id}', [CustomerDetailController::class, 'destroy'])->name('customer-details.destroy');
-        Route::patch('{id}', [CustomerDetailController::class, 'update'])->name('customer-details.patch');
+        Route::patch('{id}/status', [CustomerDetailController::class, 'updateStatus'])->name('customer-details.update-status');
     });
 
     // Admin Dashboard
     Route::get('admin-dashboard-stats', [AdminDashboardController::class, 'getDashboardStats'])->name('admin-dashboard.stats');
-
 });
 
 // Publicly access for services
