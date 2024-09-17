@@ -18,6 +18,7 @@ class CustomerDetail extends Model
         'email',
         'address',
         'status',
+        'status_updated_at',
     ];
 
     protected static function booted()

@@ -17,10 +17,14 @@ class CustomerDetailRepository implements CustomerDetailInterface
         return CustomerDetail::create($data);
     }
 
-
     public function getById(int $id): object|null
     {
         return CustomerDetail::find($id);
+    }
+
+    public function getByCode(string $code): object|null
+    {
+        return CustomerDetail::where('code', $code)->first();
     }
 
     public function update(int $id, array $data): object|null

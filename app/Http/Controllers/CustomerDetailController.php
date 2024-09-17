@@ -112,7 +112,7 @@ class CustomerDetailController extends Controller
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
-            'status' => 'required|string|in:pending,on-going,finished,completed',
+            'status' => 'sometimes|string|in:pending,on-going,finished,ready-for-pickup,completed',
         ]);
 
         try {
@@ -123,9 +123,30 @@ class CustomerDetailController extends Controller
             }
 
             $customerDetail->status = $validatedData['status'];
+            $customerDetail->status_updated_at = now();
             $customerDetail->save();
 
             return $this->responseSuccess($customerDetail, 'Status updated successfully.');
+        } catch (Exception $exception) {
+            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+        }
+    }
+
+    public function showStatus(string $code): JsonResponse
+    {
+        try {
+            $customerDetail = $this->customerDetailRepository->getByCode($code);
+
+            if (!$customerDetail) {
+                throw new ModelNotFoundException();
+            }
+
+            return $this->responseSuccess([
+                'status' => $customerDetail->status,
+                'status_updated_at' => $customerDetail->status_updated_at,
+            ], 'Customer status fetched successfully.');
+        } catch (ModelNotFoundException $exception) {
+            return $this->responseError([], 'Customer detail not found.', 404);
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }

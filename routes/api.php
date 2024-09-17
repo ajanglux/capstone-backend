@@ -56,6 +56,7 @@ Route::get('services/{id}', [ServiceListController::class, 'show'])->whereNumber
 
 // Public Customer Detail store route
 Route::post('customer-details', [CustomerDetailController::class, 'store'])->name('customer-details.store');
+Route::get('customer-details/status/{code}', [CustomerDetailController::class, 'showStatus'])->name('customer-details.show-status');
 
 // User registration and login routes
 Route::post('user/register', [UserController::class, 'store'])->name('user.register');
