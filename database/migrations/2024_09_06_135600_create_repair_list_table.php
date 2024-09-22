@@ -6,9 +6,7 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
+    
     public function up(): void
     {
         Schema::create('customer_details', function (Blueprint $table) {
@@ -21,7 +19,13 @@ return new class extends Migration
             $table->string('address', 255);
             $table->string('status')->default('pending');
             $table->timestamp('status_updated_at')->nullable();
-            $table->timestamps();
+
+            $table->timestamp('on_going_updated_at')->nullable();
+            $table->timestamp('finished_updated_at')->nullable();
+            $table->timestamp('ready_for_pickup_updated_at')->nullable();
+            $table->timestamp('completed_updated_at')->nullable();
+
+            $table->timestamps(); 
         });
 
         Schema::create('product_infos', function (Blueprint $table) {
@@ -33,19 +37,16 @@ return new class extends Migration
             $table->date('purchase_date');
             $table->string('warranty_status')->default('warranty');
             $table->timestamps();
-            
+
             $table->foreign('customer_detail_id')
                   ->references('id')->on('customer_details')
                   ->onDelete('cascade');
-        });        
+        });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('customer_details');
         Schema::dropIfExists('product_infos');
+        Schema::dropIfExists('customer_details');
     }
 };

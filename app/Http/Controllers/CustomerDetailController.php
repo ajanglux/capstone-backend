@@ -136,19 +136,23 @@ class CustomerDetailController extends Controller
     {
         try {
             $customerDetail = $this->customerDetailRepository->getByCode($code);
-
+    
             if (!$customerDetail) {
                 throw new ModelNotFoundException();
             }
-
+    
             return $this->responseSuccess([
                 'status' => $customerDetail->status,
                 'status_updated_at' => $customerDetail->status_updated_at,
+                'on_going_updated_at' => $customerDetail->on_going_updated_at,
+                'finished_updated_at' => $customerDetail->finished_updated_at,
+                'ready_for_pickup_updated_at' => $customerDetail->ready_for_pickup_updated_at,
+                'completed_updated_at' => $customerDetail->completed_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
-    }
+    }    
 }
