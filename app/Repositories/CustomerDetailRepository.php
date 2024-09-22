@@ -19,7 +19,7 @@ class CustomerDetailRepository implements CustomerDetailInterface
 
     public function getById(int $id): object|null
     {
-        return CustomerDetail::find($id);
+        return CustomerDetail::with('productInfos')->find($id);
     }
 
     public function getByCode(string $code): object|null

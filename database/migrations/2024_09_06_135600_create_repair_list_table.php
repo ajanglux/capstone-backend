@@ -41,6 +41,8 @@ return new class extends Migration
             $table->foreign('customer_detail_id')
                   ->references('id')->on('customer_details')
                   ->onDelete('cascade');
+
+            $table->index('customer_detail_id');
         });
     }
 

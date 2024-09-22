@@ -8,7 +8,6 @@ use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\ProductInfoController;
 use App\Http\Controllers\AdminDashboardController;
 
-// Routes requiring authentication
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', function (Request $request) {
         return [
@@ -17,7 +16,6 @@ Route::middleware('auth:sanctum')->group(function () {
         ];
     })->name('user.info');
 
-    // User logout
     Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');
 
     // Service List
@@ -44,6 +42,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('{id}', [CustomerDetailController::class, 'update'])->name('customer-details.update');
         Route::delete('{id}', [CustomerDetailController::class, 'destroy'])->name('customer-details.destroy');
         Route::patch('{id}/status', [CustomerDetailController::class, 'updateStatus'])->name('customer-details.update-status');
+        Route::get('/{id}/with-product-info', [CustomerDetailController::class, 'showWithProductInfo'])->name('customer-details.show-with-product-infos');
     });
 
     // Admin Dashboard
@@ -54,10 +53,10 @@ Route::middleware('auth:sanctum')->group(function () {
 Route::get('services', [ServiceListController::class, 'index'])->name('services.index');
 Route::get('services/{id}', [ServiceListController::class, 'show'])->whereNumber('id')->name('services.show');
 
-// Public Customer Detail store route
+// Public Customer Detail
 Route::post('customer-details', [CustomerDetailController::class, 'store'])->name('customer-details.store');
 Route::get('customer-details/status/{code}', [CustomerDetailController::class, 'showStatus'])->name('customer-details.show-status');
 
-// User registration and login routes
+// User registration and login
 Route::post('user/register', [UserController::class, 'store'])->name('user.register');
 Route::post('user/login', [UserController::class, 'auth'])->name('user.login');

@@ -10,6 +10,7 @@ use App\Repositories\CustomerDetailRepository;
 use App\Http\Requests\CustomerDetailRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\ProductInfo;
+use App\Models\CustomerDetail; 
 
 class CustomerDetailController extends Controller
 {
@@ -55,10 +56,12 @@ class CustomerDetailController extends Controller
     {
         try {
             $customerDetail = $this->customerDetailRepository->getById($id);
-
+            
             if (!$customerDetail) {
                 throw new ModelNotFoundException();
             }
+
+            $customerDetail->load('productInfos');
 
             return $this->responseSuccess($customerDetail, 'Customer detail fetched successfully.');
         } catch (ModelNotFoundException $exception) {
@@ -154,5 +157,17 @@ class CustomerDetailController extends Controller
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
-    }    
+    }
+    
+    public function showWithProductInfo($id): JsonResponse
+    {
+        try {
+
+            $customerDetail = CustomerDetail::with('productInfos')->findOrFail($id);
+
+            return response()->json($customerDetail, 200);
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return response()->json(['error' => 'CustomerDetail not found'], 404);
+        }
+    }
 }

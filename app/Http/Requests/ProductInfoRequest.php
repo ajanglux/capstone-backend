@@ -14,12 +14,12 @@ class ProductInfoRequest extends FormRequest
     public function rules()
     {
         return [
-            'brand' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
-            'serial_number' => 'required|string|max:20|unique:product_infos,serial_number,' . $this->route('id'),
-            'purchase_date' => 'required|date',
-            'warranty_status' => 'nullable|string|in:pending,approved,declined',
-            'customer_detail_id' => 'required|exists:customer_details,id'
+            'brand' => 'nullable|string|max:255',
+            'model' => 'nullable|string|max:255',
+            'serial_number' => 'nullable|string|max:20|unique:product_infos,serial_number,' . $this->route('id'),
+            'purchase_date' => 'nullable|date',
+            'warranty_status' => 'nullable|string|in:warranty,expired',
+            'customer_detail_id' => 'nullable|exists:customer_details,id'
         ];
     }
 }
