@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('phone_number', 20);
             $table->string('email')->nullable();
             $table->string('address', 255);
+            $table->longText('description')->nullable();
             $table->string('status')->default('pending');
             $table->timestamp('status_updated_at')->nullable();
 
@@ -35,6 +36,7 @@ return new class extends Migration
             $table->string('model', 255);
             $table->string('serial_number', 20)->unique();
             $table->date('purchase_date');
+            $table->longText('documentation')->nullable();
             $table->string('warranty_status')->default('warranty');
             $table->timestamps();
 

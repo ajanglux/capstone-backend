@@ -14,6 +14,7 @@ class ProductInfo extends Model
         'model', 
         'serial_number', 
         'purchase_date', 
+        'documentation',
         'warranty_status',
         'customer_detail_id'
     ];

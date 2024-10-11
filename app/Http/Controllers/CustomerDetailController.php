@@ -36,7 +36,7 @@ class CustomerDetailController extends Controller
     public function store(CustomerDetailRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
+        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status']);
 
         try {
             $customerDetail = $this->customerDetailRepository->create($data);
@@ -74,7 +74,7 @@ class CustomerDetailController extends Controller
     public function update(CustomerDetailRequest $request, int $id): JsonResponse
     {
         $data = $request->validated();
-        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date']);
+        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status']);
 
         try {
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);

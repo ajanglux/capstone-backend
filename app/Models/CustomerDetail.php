@@ -18,6 +18,7 @@ class CustomerDetail extends Model
         'phone_number',
         'email',
         'address',
+        'description',
         'status',
         'status_updated_at',
         'on_going_updated_at',
