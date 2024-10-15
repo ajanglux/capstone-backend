@@ -47,6 +47,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Admin Dashboard
     Route::get('admin-dashboard-stats', [AdminDashboardController::class, 'getDashboardStats'])->name('admin-dashboard.stats');
+    Route::get('admin-dashboard-stats/completed-repairs', [AdminDashboardController::class, 'getMonthlyCompletedRepairs'])->name('admin-dashboard.completed-repairs');
 });
 
 // Publicly access for services
