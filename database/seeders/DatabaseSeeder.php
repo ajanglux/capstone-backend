@@ -4,6 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
+use App\Models\User;
+use App\Models\CustomerDetail;
+
 class DatabaseSeeder extends Seeder
 {
     /**
@@ -13,6 +16,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->call(CustomerDetailSeeder::class);
+        
+        $this->call([
+            UserSeeder::class,
+            CustomerDetailSeeder::class
+        ]);
     }
 }
