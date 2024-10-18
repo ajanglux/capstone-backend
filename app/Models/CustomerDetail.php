@@ -64,6 +64,10 @@ class CustomerDetail extends Model
             case 'completed':
                 $this->completed_updated_at = Carbon::now();
                 break;
+                
+            case 'cancelled':
+                $this->cancelled_updated_at = Carbon::now();
+                break;
         }
 
         $this->status_updated_at = Carbon::now();

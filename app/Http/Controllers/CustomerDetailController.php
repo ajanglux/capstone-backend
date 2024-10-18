@@ -115,7 +115,7 @@ class CustomerDetailController extends Controller
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
-            'status' => 'sometimes|string|in:pending,on-going,finished,ready-for-pickup,completed',
+            'status' => 'sometimes|string|in:pending,on-going,finished,ready-for-pickup,completed,cancelled',
         ]);
 
         try {
