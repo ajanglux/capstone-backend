@@ -151,6 +151,7 @@ class CustomerDetailController extends Controller
                 'finished_updated_at' => $customerDetail->finished_updated_at,
                 'ready_for_pickup_updated_at' => $customerDetail->ready_for_pickup_updated_at,
                 'completed_updated_at' => $customerDetail->completed_updated_at,
+                'cancelled_updated_at' => $customerDetail->cancelled_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);

@@ -25,6 +25,7 @@ class CustomerDetail extends Model
         'finished_updated_at',
         'ready_for_pickup_updated_at',
         'completed_updated_at',
+        'cancelled_updated_at',
     ];
 
     protected static function booted()
