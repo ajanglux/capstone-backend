@@ -42,14 +42,13 @@ class AdminDashboardController extends Controller
                 ->groupBy('month')
                 ->pluck('count', 'month');
 
+            // Prepare monthly data for the chart
             $monthlyData = array_fill(1, 12, 0); 
             foreach ($completedRepairs as $month => $count) {
                 $monthlyData[$month] = $count;
             }
 
-            $formattedData = array_values($monthlyData);
-
-            return response()->json($formattedData, 200);
+            return response()->json($monthlyData, 200);
         } catch (Exception $exception) {
             return response()->json([
                 'message' => 'Failed to retrieve monthly completed repairs.',
