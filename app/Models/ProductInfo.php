@@ -23,4 +23,14 @@ class ProductInfo extends Model
     {
         return $this->belongsTo(CustomerDetail::class, 'customer_detail_id');
     }
+
+    public function setBrandAttribute($value)
+    {
+        $this->attributes['brand'] = ucfirst(strtolower($value));
+    }
+
+    public function setModelAttribute($value)
+    {
+        $this->attributes['model'] = ucfirst(strtolower($value));
+    }
 }

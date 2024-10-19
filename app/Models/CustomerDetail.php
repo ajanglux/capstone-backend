@@ -26,6 +26,7 @@ class CustomerDetail extends Model
         'ready_for_pickup_updated_at',
         'completed_updated_at',
         'cancelled_updated_at',
+        'approved_updated_at'
     ];
 
     protected static function booted()
@@ -68,8 +69,27 @@ class CustomerDetail extends Model
             case 'cancelled':
                 $this->cancelled_updated_at = Carbon::now();
                 break;
+
+            case 'approved':
+                $this->approved_updated_at = Carbon::now();
+                break;
         }
 
         $this->status_updated_at = Carbon::now();
+    }
+
+    public function setFirstNameAttribute($value)
+    {
+        $this->attributes['first_name'] = ucfirst(strtolower($value));
+    }
+
+    public function setLastNameAttribute($value)
+    {
+        $this->attributes['last_name'] = ucfirst(strtolower($value));
+    }
+
+    public function setAddressAttribute($value)
+    {
+        $this->attributes['address'] = ucfirst(strtolower($value));
     }
 }

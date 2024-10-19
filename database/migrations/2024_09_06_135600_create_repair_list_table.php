@@ -26,6 +26,7 @@ return new class extends Migration
             $table->timestamp('ready_for_pickup_updated_at')->nullable();
             $table->timestamp('completed_updated_at')->nullable();
             $table->timestamp('cancelled_updated_at')->nullable();
+            $table->timestamp('approved_updated_at')->nullable();
 
             $table->timestamps(); 
         });
