@@ -16,4 +16,14 @@ class ServiceList extends Model
         'description',
         'image',
     ];
+
+    public function setServiceTitleAttribute($value)
+    {
+        $this->attributes['service_title'] = ucfirst($value);
+    }
+
+    public function setDescriptionAttribute($value)
+    {
+        $this->attributes['description'] = ucfirst($value);
+    }
 }

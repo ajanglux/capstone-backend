@@ -38,21 +38,22 @@ class AdminDashboardController extends Controller
         try {
             $completedRepairs = CustomerDetail::selectRaw('MONTH(completed_updated_at) as month, COUNT(*) as count')
                 ->where('status', 'completed')
-                ->whereNotNull('completed_updated_at') 
+                ->whereNotNull('completed_updated_at')
                 ->groupBy('month')
                 ->pluck('count', 'month');
 
-            // Prepare monthly data for the chart
-            $monthlyData = array_fill(1, 12, 0); 
+            $monthlyData = array_fill(0, 12, 0);
+
             foreach ($completedRepairs as $month => $count) {
-                $monthlyData[$month] = $count;
+                $monthlyData[$month - 1] = $count;
             }
 
             return response()->json($monthlyData, 200);
+
         } catch (Exception $exception) {
             return response()->json([
                 'message' => 'Failed to retrieve monthly completed repairs.',
-                'error' => $exception->getMessage()
+                'error' => $exception->getMessage(),
             ], 500);
         }
     }
