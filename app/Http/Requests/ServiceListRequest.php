@@ -14,7 +14,7 @@ class ServiceListRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'service_title' => 'required|string|max:255',
+            'service_title' => 'nullable|string|max:255',
             'description' => 'nullable|string',
             'image' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ];
