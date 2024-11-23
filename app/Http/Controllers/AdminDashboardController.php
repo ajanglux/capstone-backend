@@ -14,8 +14,8 @@ class AdminDashboardController extends Controller
     public function getDashboardStats(): JsonResponse
     {
         try {
-            $pendingRepairs = CustomerDetail::where('status', 'pending')->count();
-            $ongoingRepairs = CustomerDetail::where('status', 'on-going')->count();
+            $pendingRepairs = CustomerDetail::where('status', 'Pending')->count();
+            $ongoingRepairs = CustomerDetail::where('status', 'On-Going')->count();
             $totalServices = ServiceList::count();
             $totalClients = CustomerDetail::count();
 
@@ -37,7 +37,7 @@ class AdminDashboardController extends Controller
     {
         try {
             $completedRepairs = CustomerDetail::selectRaw('MONTH(completed_updated_at) as month, COUNT(*) as count')
-                ->where('status', 'completed')
+                ->where('status', 'Completed')
                 ->whereNotNull('completed_updated_at')
                 ->groupBy('month')
                 ->pluck('count', 'month');

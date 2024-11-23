@@ -26,7 +26,8 @@ class CustomerDetail extends Model
         'ready_for_pickup_updated_at',
         'completed_updated_at',
         'cancelled_updated_at',
-        'approved_updated_at'
+        'incomplete_updated_at',
+        'responded_updated_at'
     ];
 
     protected static function booted()
@@ -50,31 +51,34 @@ class CustomerDetail extends Model
     public function updateStatusTimestamps()
     {
         switch ($this->status) {
-            case 'on-going':
+            case 'On-Going':
                 $this->on_going_updated_at = Carbon::now();
                 break;
 
-            case 'finished':
+            case 'Finished':
                 $this->finished_updated_at = Carbon::now();
                 break;
 
-            case 'ready-for-pickup':
+            case 'Ready-for-Pickup':
                 $this->ready_for_pickup_updated_at = Carbon::now();
                 break;
 
-            case 'completed':
+            case 'Completed':
                 $this->completed_updated_at = Carbon::now();
                 break;
                 
-            case 'cancelled':
+            case 'Cancelled':
                 $this->cancelled_updated_at = Carbon::now();
                 break;
 
-            case 'approved':
-                $this->approved_updated_at = Carbon::now();
+            case 'Incomplete':
+                $this->incomplete_updated_at = Carbon::now();
+                break;
+
+            case 'Responded':
+                $this->responded_updated_at = Carbon::now();
                 break;
         }
-
         $this->status_updated_at = Carbon::now();
     }
 

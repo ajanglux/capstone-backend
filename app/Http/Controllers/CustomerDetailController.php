@@ -115,7 +115,7 @@ class CustomerDetailController extends Controller
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
-            'status' => 'sometimes|string|in:pending,on-going,finished,ready-for-pickup,completed,cancelled,approved',
+            'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Incomplete,Responded',
         ]);
 
         try {
@@ -152,7 +152,8 @@ class CustomerDetailController extends Controller
                 'ready_for_pickup_updated_at' => $customerDetail->ready_for_pickup_updated_at,
                 'completed_updated_at' => $customerDetail->completed_updated_at,
                 'cancelled_updated_at' => $customerDetail->cancelled_updated_at,
-                'approved_updated_at' => $customerDetail->cancelled_updated_at,
+                'incomplete_updated_at' => $customerDetail->incomplete_updated_at,
+                'responded_updated_at' => $customerDetail->responded_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
