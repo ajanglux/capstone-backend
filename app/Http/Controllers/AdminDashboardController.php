@@ -17,7 +17,13 @@ class AdminDashboardController extends Controller
             $pendingRepairs = CustomerDetail::where('status', 'Pending')->count();
             $ongoingRepairs = CustomerDetail::where('status', 'On-Going')->count();
             $totalServices = ServiceList::count();
-            $totalClients = CustomerDetail::count();
+
+            $totalClients = CustomerDetail::whereNotNull('first_name')
+                ->whereNotNull('last_name')
+                ->where('first_name', '!=', '')
+                ->where('last_name', '!=', '')
+                ->distinct('first_name', 'last_name')
+                ->count();
 
             return response()->json([
                 'pendingRepairs' => $pendingRepairs,

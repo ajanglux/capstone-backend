@@ -16,7 +16,7 @@ class ProductInfoRequest extends FormRequest
         return [
             'brand' => 'nullable|string|max:255',
             'model' => 'nullable|string|max:255',
-            'serial_number' => 'nullable|string|max:20|unique:product_infos,serial_number,' . $this->route('id'),
+            'serial_number' => 'nullable|string|max:20',
             'purchase_date' => 'nullable|date',
             'documentation' => 'nullable|string',
             'warranty_status' => 'nullable|string|in:warranty,out_of_warranty,chargeable',

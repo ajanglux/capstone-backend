@@ -75,7 +75,7 @@ class CustomerDetailController extends Controller
     {
         $data = $request->validated();
         $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status']);
-
+    
         try {
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
 
@@ -88,19 +88,24 @@ class CustomerDetailController extends Controller
                     $updatedCustomerDetail->productInfos()->save($newProductInfo);
                 }
             }
-
+    
             return $this->responseSuccess($updatedCustomerDetail, 'Customer detail updated successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode() ?: 500);
         }
-    }
+    }    
 
     public function destroy(int $id): JsonResponse
     {
         try {
             $deletedCustomerDetail = $this->customerDetailRepository->delete($id);
+
+            $customerDetail = CustomerDetail::find($id);
+            if ($customerDetail) {
+                $customerDetail->productInfos()->delete();
+            }
 
             if ($deletedCustomerDetail) {
                 return $this->responseSuccess([], 'Customer detail deleted successfully.');

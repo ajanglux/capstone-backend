@@ -37,7 +37,7 @@ return new class extends Migration
             $table->unsignedBigInteger('customer_detail_id');
             $table->string('brand', 255);
             $table->string('model', 255);
-            $table->string('serial_number', 20)->unique();
+            $table->string('serial_number', 20);
             $table->date('purchase_date');
             $table->longText('documentation')->nullable();
             $table->string('warranty_status')->default('warranty');
