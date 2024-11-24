@@ -125,6 +125,12 @@ class CustomerDetailController extends Controller
                 return $this->responseError([], 'Customer detail not found.', 404);
             }
 
+            if ($validatedData['status'] === 'On-Going') {
+                if (!$customerDetail->isCompletelyFilled()) {
+                    return $this->responseError([], 'Customer details must be completely filled before updating status.', 422);
+                }
+            }
+
             $customerDetail->status = $validatedData['status'];
             $customerDetail->status_updated_at = now();
             $customerDetail->save();

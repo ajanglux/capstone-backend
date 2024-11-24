@@ -19,7 +19,7 @@ class CustomerDetailFactory extends Factory
             'phone_number' => $this->faker->phoneNumber,
             'email' => $this->faker->unique()->safeEmail,
             'address' => $this->faker->address,
-            'status' => $this->faker->randomElement(['Pending', 'On-Going', 'Completed']),
+            'status' => $this->faker->randomElement(['Pending', 'Incomplete']),
         ];
     }
 }

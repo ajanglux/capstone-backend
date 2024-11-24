@@ -96,4 +96,21 @@ class CustomerDetail extends Model
     {
         $this->attributes['address'] = ucfirst(strtolower($value));
     }
+
+    public function isCompletelyFilled(): bool
+    {
+        $requiredFields = ['first_name', 'last_name', 'phone_number', 'address', 'description'];
+
+        foreach ($requiredFields as $field) {
+            if (empty($this->$field)) {
+                return false;
+            }
+        }
+
+        if ($this->productInfos()->count() === 0) {
+            return false;
+        }
+
+        return true;
+    }
 }
