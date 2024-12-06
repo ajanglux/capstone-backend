@@ -11,16 +11,20 @@ use App\Http\Requests\CustomerDetailRequest;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\ProductInfo;
 use App\Models\CustomerDetail; 
+use Twilio\Rest\Client;
+use App\Services\TwilioService;
 
 class CustomerDetailController extends Controller
 {
     use ResponseTrait;
 
     protected $customerDetailRepository;
+    protected $twilioService;
 
-    public function __construct(CustomerDetailRepository $customerDetailRepository)
+    public function __construct(CustomerDetailRepository $customerDetailRepository, TwilioService $twilioService)
     {
         $this->customerDetailRepository = $customerDetailRepository;
+        $this->twilioService = $twilioService;
     }
 
     public function index(): JsonResponse
@@ -134,6 +138,9 @@ class CustomerDetailController extends Controller
                 if (!$customerDetail->isCompletelyFilled()) {
                     return $this->responseError([], 'Customer details must be completely filled before updating status.', 422);
                 }
+
+                $getCode = $customerDetail->code;
+                $this->twilioService->sendSms($customerDetail->phone_number, "Your code to check the status of your repair is: $getCode");
             }
 
             $customerDetail->status = $validatedData['status'];

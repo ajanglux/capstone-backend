@@ -97,6 +97,19 @@ class CustomerDetail extends Model
         $this->attributes['address'] = ucfirst(strtolower($value));
     }
 
+    public function setPhoneNumberAttribute($value)
+    {
+        $phoneNumber = preg_replace('/\D/', '', $value);
+    
+        if (substr($phoneNumber, 0, 3) === '639') {
+            $this->attributes['phone_number'] = '+63 ' . substr($phoneNumber, 2);
+        } elseif (substr($phoneNumber, 0, 2) == '09') {
+            $this->attributes['phone_number'] = '+63 ' . substr($phoneNumber, 1);
+        } else {
+            throw new \InvalidArgumentException('Phone number must start with +63 9 and contain 11 digits.');
+        }
+    }
+    
     public function isCompletelyFilled(): bool
     {
         $requiredFields = ['first_name', 'last_name', 'phone_number', 'address', 'description'];
