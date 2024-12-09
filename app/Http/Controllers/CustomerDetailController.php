@@ -40,7 +40,14 @@ class CustomerDetailController extends Controller
     public function store(CustomerDetailRequest $request): JsonResponse
     {
         $data = $request->validated();
-        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status']);
+        $productInfoData = $request->only([
+            'brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status',
+            'orig_box', 'gen_box', 'manual', 'driver_cd', 'sata_cable', 'simcard_memorycard_gb',
+            'remote_control', 'receiver', 'backplate_metal_plate', 'ac_adapter', 'battery_pack',
+            'lithium_battery', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn', 'swivel_base',
+            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'printer_cable_qty', 'usb_cable_qty',
+            'paper_tray_qty', 'screw_qty', 'jack_cable_qty'
+        ]);
 
         try {
             $customerDetail = $this->customerDetailRepository->create($data);
@@ -78,7 +85,14 @@ class CustomerDetailController extends Controller
     public function update(CustomerDetailRequest $request, int $id): JsonResponse
     {
         $data = $request->validated();
-        $productInfoData = $request->only(['brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status']);
+        $productInfoData = $request->only([
+            'brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status',
+            'orig_box', 'gen_box', 'manual', 'driver_cd', 'sata_cable', 'simcard_memorycard_gb',
+            'remote_control', 'receiver', 'backplate_metal_plate', 'ac_adapter', 'battery_pack',
+            'lithium_battery', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn', 'swivel_base',
+            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'printer_cable_qty', 'usb_cable_qty',
+            'paper_tray_qty', 'screw_qty', 'jack_cable_qty'
+        ]);
     
         try {
             $updatedCustomerDetail = $this->customerDetailRepository->update($id, $data);
