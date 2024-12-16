@@ -16,7 +16,7 @@ class AdminDashboardController extends Controller
         try {
             $pendingRepairs = CustomerDetail::where('status', 'Pending')->count();
             $ongoingRepairs = CustomerDetail::where('status', 'On-Going')->count();
-            $totalServices = ServiceList::count();
+            // $totalServices = ServiceList::count();
 
             $totalClients = CustomerDetail::whereNotNull('first_name')
                 ->whereNotNull('last_name')
@@ -28,7 +28,7 @@ class AdminDashboardController extends Controller
             return response()->json([
                 'pendingRepairs' => $pendingRepairs,
                 'ongoingRepairs' => $ongoingRepairs,
-                'totalServices' => $totalServices,
+                // 'totalServices' => $totalServices,
                 'totalClients' => $totalClients,
             ], 200);
         } catch (Exception $exception) {
