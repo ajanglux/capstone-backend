@@ -11,6 +11,7 @@ return new class extends Migration
     {
         Schema::create('customer_details', function (Blueprint $table) {
             $table->id();
+            // $table->unsignedBigInteger('user_id');
             $table->string('code')->unique(); // unique 'code'
             $table->string('first_name', 255);
             $table->string('last_name', 255);
@@ -30,6 +31,8 @@ return new class extends Migration
             $table->timestamp('responded_updated_at')->nullable();
 
             $table->timestamps(); 
+
+            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('product_infos', function (Blueprint $table) {

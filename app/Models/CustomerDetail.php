@@ -43,6 +43,11 @@ class CustomerDetail extends Model
         });
     }
 
+    // public function user()
+    // {
+    //     return $this->belongsTo(User::class, 'user_id');
+    // }
+
     public function productInfos()
     {
         return $this->hasMany(ProductInfo::class, 'customer_detail_id');

@@ -59,7 +59,7 @@ class CustomerDetailController extends Controller
 
             return $this->responseSuccess($customerDetail, 'Customer detail created successfully.');
         } catch (Exception $exception) {
-            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+            return $this->responseError([], $exception->getMessage(), (int) $exception->getCode() ?: 500);
         }
     }
 
