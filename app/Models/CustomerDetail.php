@@ -13,13 +13,10 @@ class CustomerDetail extends Model
 
     protected $fillable = [
         'code',
-        'first_name',
-        'last_name',
-        'phone_number',
-        'email',
-        'address',
+        'user_id',
         'description',
         'status',
+        'comment',
         'status_updated_at',
         'on_going_updated_at',
         'finished_updated_at',
@@ -29,6 +26,14 @@ class CustomerDetail extends Model
         'incomplete_updated_at',
         'responded_updated_at'
     ];
+
+    /**
+     * Get the user that owns the customer details.
+     */
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     protected static function booted()
     {
@@ -42,11 +47,6 @@ class CustomerDetail extends Model
             $customerDetail->updateStatusTimestamps();
         });
     }
-
-    // public function user()
-    // {
-    //     return $this->belongsTo(User::class, 'user_id');
-    // }
 
     public function productInfos()
     {
@@ -117,7 +117,8 @@ class CustomerDetail extends Model
     
     public function isCompletelyFilled(): bool
     {
-        $requiredFields = ['first_name', 'last_name', 'phone_number', 'address', 'description'];
+        // $requiredFields = ['first_name', 'last_name', 'phone_number', 'address', 'description'];
+        $requiredFields = ['description'];
 
         foreach ($requiredFields as $field) {
             if (empty($this->$field)) {

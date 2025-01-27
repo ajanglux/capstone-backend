@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CustomerDetail;
 use App\Models\ServiceList;
+use App\Models\User;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -18,12 +19,7 @@ class AdminDashboardController extends Controller
             $ongoingRepairs = CustomerDetail::where('status', 'On-Going')->count();
             // $totalServices = ServiceList::count();
 
-            $totalClients = CustomerDetail::whereNotNull('first_name')
-                ->whereNotNull('last_name')
-                ->where('first_name', '!=', '')
-                ->where('last_name', '!=', '')
-                ->distinct('first_name', 'last_name')
-                ->count();
+            $totalClients = User::Where('role', '0')->count();
 
             return response()->json([
                 'pendingRepairs' => $pendingRepairs,

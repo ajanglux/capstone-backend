@@ -18,6 +18,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::post('user/logout', [UserController::class, 'logout'])->name('user.logout');
 
+    // UserController
+    Route::get('/user/profile', [UserController::class, 'fetchUserData']);
+    Route::put('/user/profile', [UserController::class, 'updateUserProfile']);
+
     // Service List
     Route::prefix('services')->group(function () {
         Route::post('/', [ServiceListController::class, 'store'])->name('services.store');
@@ -43,6 +47,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('{id}', [CustomerDetailController::class, 'destroy'])->name('customer-details.destroy');
         Route::patch('{id}/status', [CustomerDetailController::class, 'updateStatus'])->name('customer-details.update-status');
         Route::get('/{id}/with-product-info', [CustomerDetailController::class, 'showWithProductInfo'])->name('customer-details.show-with-product-infos');
+        Route::get('/home/status', [CustomerDetailController::class, 'showHomeStatus']);
+        Route::put('/comment/{id}', [CustomerDetailController::class, 'comment']);
+        Route::get('/check-inquiries', [CustomerDetailController::class, 'checkInquiries']);
+
     });
 
     // Admin Dashboard

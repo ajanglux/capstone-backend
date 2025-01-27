@@ -9,7 +9,8 @@ class CustomerDetailRepository implements CustomerDetailInterface
 {
     public function getAll(): array
     {
-        return CustomerDetail::all()->toArray();
+        // Eager load the user relationship when fetching all customer details
+        return CustomerDetail::with('user')->get()->toArray();
     }
 
     public function create(array $data): object|null
@@ -19,7 +20,7 @@ class CustomerDetailRepository implements CustomerDetailInterface
 
     public function getById(int $id): object|null
     {
-        return CustomerDetail::with('productInfos')->find($id);
+        return CustomerDetail::with(['productInfos','user'])->find($id);
     }
 
     public function getByCode(string $code): object|null

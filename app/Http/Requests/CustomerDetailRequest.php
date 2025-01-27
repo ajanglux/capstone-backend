@@ -14,11 +14,7 @@ class CustomerDetailRequest extends FormRequest
     public function rules()
     {
         return [
-            'first_name' => 'nullable|string|max:255',
-            'last_name' => 'nullable|string|max:255',
-            'phone_number' => 'nullable|string|max:20',
-            'email' => 'nullable|email',
-            'address' => 'nullable|string|max:255',
+            'user_id' => 'nullable|integer|exists:users,id',
             'description' => 'nullable|string',
             'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Incomplete,Responded',
         ];

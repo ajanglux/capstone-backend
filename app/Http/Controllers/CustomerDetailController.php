@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use App\Models\ProductInfo;
 use App\Models\CustomerDetail; 
 use Twilio\Rest\Client;
+use Illuminate\Support\Facades\Auth;
 use App\Services\TwilioService;
 
 class CustomerDetailController extends Controller
@@ -31,7 +32,7 @@ class CustomerDetailController extends Controller
     {
         try {
             $customerDetails = $this->customerDetailRepository->getAll();
-            return $this->responseSuccess($customerDetails, 'Customer details fetched successfully.');
+            return $this->responseSuccess($customerDetails, 'Customer details fetched successfullyss.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -143,7 +144,7 @@ class CustomerDetailController extends Controller
 
         try {
             $customerDetail = $this->customerDetailRepository->getById($id);
-
+            
             if (!$customerDetail) {
                 return $this->responseError([], 'Customer detail not found.', 404);
             }
@@ -154,7 +155,7 @@ class CustomerDetailController extends Controller
                 }
 
                 $getCode = $customerDetail->code;
-                $this->twilioService->sendSms($customerDetail->phone_number, "Your code to check the status of your repair is: $getCode");
+                // $this->twilioService->sendSms($customerDetail->phone_number, "Your code to check the status of your repair is: $getCode");
             }
 
             $customerDetail->status = $validatedData['status'];
@@ -193,16 +194,84 @@ class CustomerDetailController extends Controller
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
     }
-    
+
+    public function showHomeStatus()
+    {
+        try {
+            $user = Auth::user();
+
+            // Retrieve the latest customer detail associated with the user
+            $customerDetailData = $user->customerDetail()
+                ->orderBy('created_at', 'desc')  // Ensure it's the most recent inquiry
+                ->first();
+
+            if (!$customerDetailData) {
+                throw new ModelNotFoundException();
+            }
+
+            return $this->responseSuccess([
+                'status' => $customerDetailData->status,
+                'status_updated_at' => $customerDetailData->status_updated_at,
+                'on_going_updated_at' => $customerDetailData->on_going_updated_at,
+                'finished_updated_at' => $customerDetailData->finished_updated_at,
+                'ready_for_pickup_updated_at' => $customerDetailData->ready_for_pickup_updated_at,
+                'completed_updated_at' => $customerDetailData->completed_updated_at,
+                'cancelled_updated_at' => $customerDetailData->cancelled_updated_at,
+                'incomplete_updated_at' => $customerDetailData->incomplete_updated_at,
+                'responded_updated_at' => $customerDetailData->responded_updated_at,
+                'comment' => $customerDetailData->comment,
+                'code' => $customerDetailData->code,
+            ], 'Customer status fetched successfully.');
+        } catch (ModelNotFoundException $exception) {
+            return $this->responseError([], 'Customer detail not found.', 404);
+        } catch (Exception $exception) {
+            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+        }
+    }
+
     public function showWithProductInfo($id): JsonResponse
     {
         try {
 
-            $customerDetail = CustomerDetail::with('productInfos')->findOrFail($id);
+            $customerDetail = CustomerDetail::with('productInfos', 'user')->findOrFail($id);
 
             return response()->json($customerDetail, 200);
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return response()->json(['error' => 'CustomerDetail not found'], 404);
         }
     }
+
+    public function comment(Request $request, $id)
+    {
+        $request->validate([
+            'comment' => 'nullable|string|max:255',
+            'status' => 'nullable|string|max:255',
+        ]);
+
+        $repair = CustomerDetail::findOrFail($id);
+        $repair->update([
+            'comment' => $request->comment,
+            'status' => "Responded",
+        ]);
+
+        return response()->json([
+            'message' => 'Comment updated successfully.',
+            'data' => $repair
+        ]);
+    }
+
+    public function checkInquiries(Request $request)
+    {
+        $userId = auth()->id();
+        $hasPendingInquiry = CustomerDetail::where('user_id', $userId)
+            ->whereNotIn('status', ['Completed', 'Responded'])
+            ->exists();
+
+        return response()->json([
+            'hasPendingInquiry' => $hasPendingInquiry
+        ]);
+    }
+
+
+
 }

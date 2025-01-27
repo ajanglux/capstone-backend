@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreUserRequest;
 use App\Http\Requests\AuthUserRequest;
+use Illuminate\Support\Facades\Auth;
+
 
 class UserController extends Controller
 {
@@ -49,6 +51,43 @@ class UserController extends Controller
     
         return response()->json(['error' => 'Invalid data provided'], 422);
     }
+
+    public function fetchUserData()
+    {
+        $user = Auth::user();  // Get authenticated user
+
+        if (!$user) {
+            return response()->json([
+                'message' => 'User not found',
+            ], 404);
+        }
+
+        return response()->json([
+            'user' => $user,
+            'message' => 'User Data Successfully Fetched',
+        ], 200);
+    }
+
+    public function updateUserProfile(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'first_name' => 'required|string|max:255',
+            'last_name' => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'phone_number' => 'required|digits:11',
+            'address' => 'required|string|max:255',
+        ]);
+
+        $user->update($request->all());
+
+        return response()->json([
+            'message' => 'Profile updated successfully',
+            'user' => $user
+        ], 200);
+    }
+
     
 
     public function logout (Request $request)
