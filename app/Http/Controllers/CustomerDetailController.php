@@ -220,7 +220,10 @@ class CustomerDetailController extends Controller
                 'incomplete_updated_at' => $customerDetailData->incomplete_updated_at,
                 'responded_updated_at' => $customerDetailData->responded_updated_at,
                 'comment' => $customerDetailData->comment,
+                'admin_comment_updated_at' => $customerDetailData->admin_comment_updated_at,
                 'code' => $customerDetailData->code,
+                'description' => $customerDetailData->description,
+                'description_updated_at' => $customerDetailData->description_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
@@ -272,6 +275,21 @@ class CustomerDetailController extends Controller
         ]);
     }
 
+    public function showAllDescriptions(): JsonResponse
+    {
+        try {
+            $user = Auth::user();
 
+            $customerDetails = $user->customerDetail()->get(['description']);
+
+            if ($customerDetails->isEmpty()) {
+                return $this->responseError([], 'No customer details found for this user.', 404);
+            }
+            
+            return $this->responseSuccess($customerDetails, 'Customer descriptions fetched successfully.');
+        } catch (Exception $exception) {
+            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+        }
+    }
 
 }

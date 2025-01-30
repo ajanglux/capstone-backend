@@ -20,8 +20,8 @@ return new class extends Migration
             $table->string('address', 255);
             $table->longText('description')->nullable();
             $table->string('status')->default('Pending');
+            $table->timestamp('description_updated_at')->nullable();
             $table->timestamp('status_updated_at')->nullable();
-
             $table->timestamp('on_going_updated_at')->nullable();
             $table->timestamp('finished_updated_at')->nullable();
             $table->timestamp('ready_for_pickup_updated_at')->nullable();

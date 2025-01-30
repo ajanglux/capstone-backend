@@ -9,13 +9,14 @@ return new class extends Migration {
     {
         Schema::table('customer_details', function (Blueprint $table) {
             $table->text('comment')->nullable()->after('description')->comment('Additional customer comments or notes');
+            $table->timestamp('admin_comment_updated_at')->nullable()->after('comment');
         });
     }
 
     public function down()
     {
         Schema::table('customer_details', function (Blueprint $table) {
-            $table->dropColumn(['email','comment']);
+            $table->dropColumn(['email','comment', 'admin_comment_updated_at' ]);
         });
     }
 };

@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/home/status', [CustomerDetailController::class, 'showHomeStatus']);
         Route::put('/comment/{id}', [CustomerDetailController::class, 'comment']);
         Route::get('/check-inquiries', [CustomerDetailController::class, 'checkInquiries']);
+        Route::get('/show-description', [CustomerDetailController::class, 'showAllDescriptions']);
 
     });
 

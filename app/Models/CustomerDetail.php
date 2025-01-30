@@ -17,6 +17,7 @@ class CustomerDetail extends Model
         'description',
         'status',
         'comment',
+        'admin_comment_updated_at',
         'status_updated_at',
         'on_going_updated_at',
         'finished_updated_at',
@@ -24,7 +25,8 @@ class CustomerDetail extends Model
         'completed_updated_at',
         'cancelled_updated_at',
         'incomplete_updated_at',
-        'responded_updated_at'
+        'responded_updated_at',
+        'description_updated_at' // Added missing fillable field
     ];
 
     /**
@@ -40,6 +42,18 @@ class CustomerDetail extends Model
         static::creating(function ($customerDetail) {
             if (empty($customerDetail->code)) {
                 $customerDetail->code = 'CUST-' . Str::upper(Str::random(8));
+            }
+        });
+
+        static::saving(function ($customerDetail) {
+            // Check if comment is newly added or updated
+            if ($customerDetail->isDirty('comment') && !is_null($customerDetail->comment)) {
+                $customerDetail->admin_comment_updated_at = Carbon::now();
+            }
+
+            // Check if description is newly added or updated
+            if ($customerDetail->isDirty('description') && !is_null($customerDetail->description)) {
+                $customerDetail->description_updated_at = Carbon::now();
             }
         });
 
@@ -117,7 +131,6 @@ class CustomerDetail extends Model
     
     public function isCompletelyFilled(): bool
     {
-        // $requiredFields = ['first_name', 'last_name', 'phone_number', 'address', 'description'];
         $requiredFields = ['description'];
 
         foreach ($requiredFields as $field) {
