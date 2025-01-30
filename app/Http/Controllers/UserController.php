@@ -16,9 +16,12 @@ class UserController extends Controller
     {
         if ($request->validated()) {
             User::create([
-                'name' => $request->name,
+                'first_name' => $request->first_name,
+                'last_name' => $request->last_name,
+                'phone_number' => $request->phone_number,
+                'address' => $request->address,
                 'email' => $request->email,
-                'password' => Hash::make($request->password)
+                'password' => Hash::make($request->password)  // Use hashed password
             ]);
 
             return response()->json([
@@ -73,11 +76,11 @@ class UserController extends Controller
         $user = Auth::user();
 
         $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
+            'first_name' => 'required|string|max:255:users,first_name,' . $user->id,
+            'last_name' => 'required|string|max:255:users,last_name,' . $user->id,
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number' => 'required|digits:11',
-            'address' => 'required|string|max:255',
+            'phone_number' => 'required|digits:11:users,phone_number,' . $user->id,
+            'address' => 'required|string|max:255:users,address,' . $user->id,
         ]);
 
         $user->update($request->all());
