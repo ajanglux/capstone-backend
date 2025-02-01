@@ -248,13 +248,13 @@ class CustomerDetailController extends Controller
     {
         $request->validate([
             'comment' => 'nullable|string|max:255',
-            'status' => 'nullable|string|max:255',
+            // 'status' => 'nullable|string|max:255',
         ]);
 
         $repair = CustomerDetail::findOrFail($id);
         $repair->update([
             'comment' => $request->comment,
-            'status' => "Responded",
+            // 'status' => "Responded",
         ]);
 
         return response()->json([

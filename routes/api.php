@@ -7,6 +7,29 @@ use App\Http\Controllers\ServiceListController;
 use App\Http\Controllers\CustomerDetailController;
 use App\Http\Controllers\ProductInfoController;
 use App\Http\Controllers\AdminDashboardController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use App\Http\Controllers\VerifyEmailController;
+
+Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
+Route::post('user/reset-password', [UserController::class, 'resetPassword']);
+
+Route::get('/email/verify', function (Request $request) {
+    return response()->json(['message' => 'Please verify your email']);
+})->name('verification.notice');
+
+Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify'])
+->middleware(['signed'])
+->name('verification.verify');
+
+Route::post('/email/resend', function (Request $request) {
+    if ($request->user()->hasVerifiedEmail()) {
+        return response()->json(['message' => 'Email already verified']);
+    }
+
+    $request->user()->sendEmailVerificationNotification();
+
+    return response()->json(['message' => 'Verification email resent']);
+})->name('verification.resend');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('user', function (Request $request) {
