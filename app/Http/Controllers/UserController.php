@@ -139,23 +139,22 @@ class UserController extends Controller
     public function updateUserProfile(Request $request)
     {
         $user = Auth::user();
-
+    
         $request->validate([
-            'first_name' => 'required|string|max:255:users,first_name,' . $user->id,
-            'last_name' => 'required|string|max:255:users,last_name,' . $user->id,
+            'first_name' => 'required|string|max:255', 
+            'last_name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
-            'phone_number' => 'required|digits:11:users,phone_number,' . $user->id,
-            'address' => 'required|string|max:255:users,address,' . $user->id,
+            'phone_number' => 'required|digits:11', 
+            'address' => 'required|string|max:255',
         ]);
-
+    
         $user->update($request->all());
-
+    
         return response()->json([
             'message' => 'Profile updated successfully',
             'user' => $user
         ], 200);
-    }
-
+    }    
     
 
     public function logout (Request $request)

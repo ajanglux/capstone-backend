@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\VerifyEmailController;
 
+// Emails
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('user/reset-password', [UserController::class, 'resetPassword']);
 
