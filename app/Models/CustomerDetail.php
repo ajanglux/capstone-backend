@@ -24,9 +24,8 @@ class CustomerDetail extends Model
         'ready_for_pickup_updated_at',
         'completed_updated_at',
         'cancelled_updated_at',
-        'incomplete_updated_at',
+        'unrepairable_updated_at',
         'responded_updated_at',
-        'description_updated_at' // Added missing fillable field
     ];
 
     /**

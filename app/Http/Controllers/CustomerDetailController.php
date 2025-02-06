@@ -38,29 +38,65 @@ class CustomerDetailController extends Controller
         }
     }
 
-    public function store(CustomerDetailRequest $request): JsonResponse
+    public function myListRepair(): JsonResponse
+    {
+        try {
+            $user_id = auth()->id();
+            $customerDetails = $this->customerDetailRepository->getUserAll($user_id);
+            return $this->responseSuccess($customerDetails, 'Customer details fetched successfullyss.');
+        } catch (Exception $exception) {
+            return $this->responseError([], $exception->getMessage(), $exception->getCode());
+        }
+    }
+
+    public function store(CustomerDetailRequest $request)
     {
         $data = $request->validated();
+
+        // Define default values for customer details
+        $defaultCustomerDetails = [
+            'status' => 'Pending', // Default status
+            'description' => 'No description provided', // Default description
+            'user_id' => $request->has('user_id') ? $request->user_id : auth()->id(), // Default to logged-in user
+        ];
+
+        // Merge default values with incoming request data
+        $data = array_merge($defaultCustomerDetails, $data);
+
+        // Extract only the allowed product info fields
         $productInfoData = $request->only([
             'brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status',
-            'orig_box', 'gen_box', 'manual', 'driver_cd', 'sata_cable', 'simcard_memorycard_gb',
-            'remote_control', 'receiver', 'backplate_metal_plate', 'ac_adapter', 'battery_pack',
-            'lithium_battery', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn', 'swivel_base',
-            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'printer_cable_qty', 'usb_cable_qty',
-            'paper_tray_qty', 'screw_qty', 'jack_cable_qty'
+            'ac_adapter', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn',
+            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'description_of_repair'
         ]);
 
         try {
             $customerDetail = $this->customerDetailRepository->create($data);
 
-            if (!empty($productInfoData)) {
+            // Ensure product info has at least one non-empty value before saving
+            if (!empty(array_filter($productInfoData))) { 
+
+                // Assign a default value if serial_number is empty
+                if (empty($productInfoData['serial_number'])) {
+                    $productInfoData['serial_number'] = 'N/A';
+                }
+
+                if (empty($productInfoData['purchase_date'])) {
+                    $productInfoData['purchase_date'] = null;  // Set to NULL instead of 'N/A'
+                }         
+                
+                if (empty($productInfoData['warranty_status'])) {
+                    $productInfoData['warranty_status'] = 'Not Specified';  // Set a default value
+                }
+                
                 $productInfo = new ProductInfo($productInfoData);
                 $customerDetail->productInfos()->save($productInfo);
             }
 
             return $this->responseSuccess($customerDetail, 'Customer detail created successfully.');
         } catch (Exception $exception) {
-            return $this->responseError([], $exception->getMessage(), (int) $exception->getCode() ?: 500);
+            $statusCode = ($exception->getCode() > 99 && $exception->getCode() < 600) ? (int) $exception->getCode() : 500;
+            return $this->responseError([], $exception->getMessage(), $statusCode);
         }
     }
 
@@ -88,11 +124,8 @@ class CustomerDetailController extends Controller
         $data = $request->validated();
         $productInfoData = $request->only([
             'brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status',
-            'orig_box', 'gen_box', 'manual', 'driver_cd', 'sata_cable', 'simcard_memorycard_gb',
-            'remote_control', 'receiver', 'backplate_metal_plate', 'ac_adapter', 'battery_pack',
-            'lithium_battery', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn', 'swivel_base',
-            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'printer_cable_qty', 'usb_cable_qty',
-            'paper_tray_qty', 'screw_qty', 'jack_cable_qty'
+            'ac_adapter', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn',
+            'hdd', 'ram_brand', 'ram_size_gb', 'power_cord_qty', 'description_of_repair'
         ]);
     
         try {
@@ -139,7 +172,7 @@ class CustomerDetailController extends Controller
     public function updateStatus(Request $request, int $id): JsonResponse
     {
         $validatedData = $request->validate([
-            'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Incomplete,Responded',
+            'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Unrepairable,Responded',
         ]);
 
         try {
@@ -186,7 +219,7 @@ class CustomerDetailController extends Controller
                 'completed_updated_at' => $customerDetail->completed_updated_at,
                 'cancelled_updated_at' => $customerDetail->cancelled_updated_at,
                 'incomplete_updated_at' => $customerDetail->incomplete_updated_at,
-                'responded_updated_at' => $customerDetail->responded_updated_at,
+                'unrepairable_updated_at' => $customerDetail->unrepairable_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
@@ -217,7 +250,7 @@ class CustomerDetailController extends Controller
                 'ready_for_pickup_updated_at' => $customerDetailData->ready_for_pickup_updated_at,
                 'completed_updated_at' => $customerDetailData->completed_updated_at,
                 'cancelled_updated_at' => $customerDetailData->cancelled_updated_at,
-                'incomplete_updated_at' => $customerDetailData->incomplete_updated_at,
+                'unrepairable_updated_at' => $customerDetailData->unrepairable_updated_at,
                 'responded_updated_at' => $customerDetailData->responded_updated_at,
                 'comment' => $customerDetailData->comment,
                 'admin_comment_updated_at' => $customerDetailData->admin_comment_updated_at,

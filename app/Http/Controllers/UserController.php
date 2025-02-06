@@ -37,7 +37,6 @@ class UserController extends Controller
         }
     }
 
-
     public function forgotPassword(Request $request)
     {
         $request->validate([
@@ -50,7 +49,7 @@ class UserController extends Controller
             return response()->json(['error' => 'User not found'], 404);
         }
 
-        $token = Str::random(40);
+        $token = rand(100000, 999999);
 
         DB::table('password_reset_tokens')->updateOrInsert(
             ['email' => $request->email],
@@ -72,12 +71,10 @@ class UserController extends Controller
     {
         $request->validate([
             'token' => 'required',
-            'email' => 'required|email|exists:users,email',
             'password' => 'required|min:8|confirmed',
         ]);
 
         $resetToken = DB::table('password_reset_tokens')
-            ->where('email', $request->email)
             ->where('token', $request->token)
             ->first();
 
@@ -89,14 +86,20 @@ class UserController extends Controller
             return response()->json(['error' => 'Token has expired'], 400);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $resetToken->email)->first();
+
+        if (!$user) {
+            return response()->json(['error' => 'User not found'], 404);
+        }
+
         $user->password = Hash::make($request->password);
         $user->save();
 
-        DB::table('password_reset_tokens')->where('email', $request->email)->delete();
+        DB::table('password_reset_tokens')->where('token', $request->token)->delete();
 
         return response()->json(['message' => 'Password has been reset successfully']);
     }
+
 
     public function auth(Request $request)
     {

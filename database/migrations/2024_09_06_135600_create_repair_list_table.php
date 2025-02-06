@@ -27,7 +27,7 @@ return new class extends Migration
             $table->timestamp('ready_for_pickup_updated_at')->nullable();
             $table->timestamp('completed_updated_at')->nullable();
             $table->timestamp('cancelled_updated_at')->nullable();
-            $table->timestamp('incomplete_updated_at')->nullable();
+            $table->timestamp('unrepairable_updated_at')->nullable();
             $table->timestamp('responded_updated_at')->nullable();
 
             $table->timestamps(); 
@@ -45,34 +45,16 @@ return new class extends Migration
             $table->longText('documentation')->nullable();
             $table->string('warranty_status')->default('warranty');
 
-            $table->string('orig_box')->nullable();
-            $table->string('gen_box')->nullable();
-            $table->string('manual')->nullable();
-            $table->string('driver_cd')->nullable();
-            $table->string('sata_cable')->nullable();
-            $table->string('simcard_memorycard_gb')->nullable();
-            $table->string('remote_control')->nullable();
-            $table->string('receiver')->nullable();
-            $table->string('backplate_metal_plate')->nullable();
-
             $table->string('ac_adapter')->nullable();
-            $table->string('battery_pack')->nullable();
-            $table->string('lithium_battery')->nullable();
             $table->string('vga_cable')->nullable();
             $table->string('dvi_cable')->nullable();
             $table->string('display_cable')->nullable();
             $table->string('bag_pn')->nullable();
-            $table->string('swivel_base')->nullable();
 
             $table->string('hdd')->nullable();
             $table->string('ram_brand')->nullable();
             $table->string('ram_size_gb')->nullable();
             $table->string('power_cord_qty')->nullable();
-            $table->string('printer_cable_qty')->nullable();
-            $table->string('usb_cable_qty')->nullable();
-            $table->string('paper_tray_qty')->nullable();
-            $table->string('screw_qty')->nullable();
-            $table->string('jack_cable_qty')->nullable();
 
             $table->timestamps();
 

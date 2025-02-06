@@ -26,6 +26,8 @@ class ProductInfo extends Model
         'ram_brand',
         'ram_size_gb',
         'power_cord_qty',
+        'description_of_repair',
+        'address',
     ];
 
     public function customerDetail()

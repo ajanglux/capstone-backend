@@ -9,10 +9,14 @@ use App\Http\Controllers\ProductInfoController;
 use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\VerifyEmailController;
+use App\Models\User;
 
 // Emails
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
 Route::post('user/reset-password', [UserController::class, 'resetPassword']);
+
+Route::post('/verify-email-code', [VerifyEmailController::class, 'verifyCode'])->name('verification.verifyCode');
+
 
 Route::get('/email/verify', function (Request $request) {
     return response()->json(['message' => 'Please verify your email']);
@@ -23,11 +27,18 @@ Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify']
 ->name('verification.verify');
 
 Route::post('/email/resend', function (Request $request) {
-    if ($request->user()->hasVerifiedEmail()) {
+    $email = $request->input('email'); // Get the email from request
+    $user = \App\Models\User::where('email', $email)->first();
+
+    if (!$user) {
+        return response()->json(['message' => 'User not found'], 404);
+    }
+
+    if ($user->hasVerifiedEmail()) {
         return response()->json(['message' => 'Email already verified']);
     }
 
-    $request->user()->sendEmailVerificationNotification();
+    $user->sendEmailVerificationNotification();
 
     return response()->json(['message' => 'Verification email resent']);
 })->name('verification.resend');
@@ -75,7 +86,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/comment/{id}', [CustomerDetailController::class, 'comment']);
         Route::get('/check-inquiries', [CustomerDetailController::class, 'checkInquiries']);
         Route::get('/show-description', [CustomerDetailController::class, 'showAllDescriptions']);
-
+        Route::get('/my-list/repair', [CustomerDetailController::class, 'myListRepair']);
+        
     });
 
     // Admin Dashboard
