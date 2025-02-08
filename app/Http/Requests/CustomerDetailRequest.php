@@ -16,7 +16,7 @@ class CustomerDetailRequest extends FormRequest
         return [
             'user_id' => 'nullable|integer|exists:users,id',
             'description' => 'nullable|string',
-            'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Incomplete,Responded',
+            'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Unrepairable,Responded',
         ];
     }
 }

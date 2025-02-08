@@ -56,7 +56,7 @@ class UserController extends Controller
             ['token' => $token, 'created_at' => now()]
         );
 
-        Mail::raw("Your password reset token is: {$token}", function ($message) use ($user) {
+        Mail::raw("\nYour password reset code is: {$token}", function ($message) use ($user) {
             $message->to($user->email)
                     ->subject('Password Reset Token');
         });
