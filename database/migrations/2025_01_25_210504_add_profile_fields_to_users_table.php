@@ -15,6 +15,7 @@ return new class extends Migration
             $table->string('last_name')->after('first_name')->nullable();
             $table->string('phone_number')->after('email')->nullable();
             $table->text('address')->after('phone_number')->nullable();
+            $table->integer('age')->after('address')->nullable();
         });
     }
 
@@ -24,7 +25,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn(['first_name', 'last_name', 'phone_number', 'address']);
+            $table->dropColumn(['first_name', 'last_name', 'phone_number', 'address', 'age']);
         });
     }
 };

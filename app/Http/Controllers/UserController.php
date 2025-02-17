@@ -26,6 +26,7 @@ class UserController extends Controller
                 'phone_number' => $request->phone_number,
                 'address' => $request->address,
                 'email' => $request->email,
+                'age' => $request->age, 
                 'password' => Hash::make($request->password)
             ]);
 
@@ -103,25 +104,31 @@ class UserController extends Controller
 
     public function auth(Request $request)
     {
-        $credentials = $request->only('email', 'password');
-
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-
-            if (!$user->hasVerifiedEmail()) {
-                return response()->json(['error' => 'Please verify your email before logging in.'], 403);
-            }
-
-            $token = $user->createToken('YourApp')->plainTextToken;
-            return response()->json([
-                'message' => 'Login successful',
-                'currentToken' => $token,
-                'user' => $user,
-            ]);
+        $user = User::where('email', $request->email)->first();
+    
+        if (!$user) {
+            return response()->json(['error' => 'No account found with this email.'], 404);
         }
-
-        return response()->json(['error' => 'Unauthorized'], 401);
+    
+        if (!Auth::attempt($request->only('email', 'password'))) {
+            return response()->json(['error' => 'Incorrect password. Please try again.'], 401);
+        }
+    
+        $user = Auth::user();
+    
+        if (!$user->hasVerifiedEmail()) {
+            return response()->json(['error' => 'Please verify your email before logging in.'], 403);
+        }
+    
+        $token = $user->createToken('YourApp')->plainTextToken;
+    
+        return response()->json([
+            'message' => 'Login successful',
+            'currentToken' => $token,
+            'user' => $user,
+        ]);
     }
+    
 
     public function fetchUserData()
     {
@@ -149,6 +156,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone_number' => 'required|digits:11', 
             'address' => 'required|string|max:255',
+            'age' => 'required|integer|min:1|max:120',
         ]);
     
         $user->update($request->all());
@@ -157,7 +165,35 @@ class UserController extends Controller
             'message' => 'Profile updated successfully',
             'user' => $user
         ], 200);
-    }    
+    }
+    
+    public function updateEmail(Request $request)
+    {
+        $user = Auth::user();
+
+        $request->validate([
+            'email' => 'required|email|unique:users,email,' . $user->id,
+        ]);
+
+        // Check if the email is actually changing
+        if ($request->email === $user->email) {
+            return response()->json([
+                'message' => 'The new email must be different from the current email.'
+            ], 400);
+        }
+
+        // Update email and mark as unverified
+        $user->email = $request->email;
+        $user->email_verified_at = null;
+        $user->save();
+
+        // Trigger email verification
+        event(new Registered($user));
+
+        return response()->json([
+            'message' => 'Email updated successfully. Please verify your new email.'
+        ], 200);
+    }
     
 
     public function logout (Request $request)
