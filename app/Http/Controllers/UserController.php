@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Password;
 use App\Mail\PasswordResetMail;
 use Illuminate\Auth\Events\Registered;
+use Carbon\Carbon;
 
 class UserController extends Controller
 {
@@ -26,7 +27,7 @@ class UserController extends Controller
                 'phone_number' => $request->phone_number,
                 'address' => $request->address,
                 'email' => $request->email,
-                'age' => $request->age, 
+                'birthday' => $request->birthday, 
                 'password' => Hash::make($request->password)
             ]);
 
@@ -141,7 +142,16 @@ class UserController extends Controller
         }
 
         return response()->json([
-            'user' => $user,
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'phone_number' => $user->phone_number,
+                'address' => $user->address,
+                'birthday' => $user->birthday ? $user->birthday->format('Y-m-d') : null,
+                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null, // Auto-calculate age
+            ],
             'message' => 'User Data Successfully Fetched',
         ], 200);
     }
@@ -156,14 +166,23 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone_number' => 'required|digits:11', 
             'address' => 'required|string|max:255',
-            'age' => 'required|integer|min:1|max:120',
+            'birthday' => 'required|date|before:today', // Ensure valid date
         ]);
     
-        $user->update($request->all());
+        $user->update($request->only(['first_name', 'last_name', 'email', 'phone_number', 'address', 'birthday']));
     
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user
+            'user' => [
+                'id' => $user->id,
+                'first_name' => $user->first_name,
+                'last_name' => $user->last_name,
+                'email' => $user->email,
+                'phone_number' => $user->phone_number,
+                'address' => $user->address,
+                'birthday' => $user->birthday ? $user->birthday->format('Y-m-d') : null,
+                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null, // Auto-calculate age
+            ]
         ], 200);
     }
     

@@ -7,6 +7,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Laravel\Sanctum\HasApiTokens;
+use Carbon\Carbon;
 
 class User extends Authenticatable implements MustVerifyEmail
 {
@@ -26,7 +27,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'last_name',
         'phone_number',
         'address',
-        'age',
+        'birthday',
     ];
 
     /**
@@ -49,6 +50,7 @@ class User extends Authenticatable implements MustVerifyEmail
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'birthday' => 'date',
         ];
     }
 
@@ -60,5 +62,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function sendEmailVerificationNotification()
     {
         $this->notify(new \App\Notifications\VerifyEmail);
+    }
+
+    public function getAgeAttribute()
+    {
+        return $this->birthday ? Carbon::parse($this->birthday)->age : null;
     }
 }
