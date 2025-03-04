@@ -32,7 +32,7 @@ class CustomerDetailController extends Controller
     {
         try {
             $customerDetails = $this->customerDetailRepository->getAll();
-            return $this->responseSuccess($customerDetails, 'Customer details fetched successfullyss.');
+            return $this->responseSuccess($customerDetails, 'Customer details fetched successfullyS.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -43,7 +43,7 @@ class CustomerDetailController extends Controller
         try {
             $user_id = auth()->id();
             $customerDetails = $this->customerDetailRepository->getUserAll($user_id);
-            return $this->responseSuccess($customerDetails, 'Customer details fetched successfullyss.');
+            return $this->responseSuccess($customerDetails, 'Customer details fetched successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -173,11 +173,12 @@ class CustomerDetailController extends Controller
     {
         $validatedData = $request->validate([
             'status' => 'sometimes|string|in:Pending,On-Going,Finished,Ready-for-Pickup,Completed,Cancelled,Unrepairable,Responded',
+            'cancel_reason' => 'required_if:status,Cancelled|string|max:255',
         ]);
 
         try {
             $customerDetail = $this->customerDetailRepository->getById($id);
-            
+
             if (!$customerDetail) {
                 return $this->responseError([], 'Customer detail not found.', 404);
             }
@@ -186,9 +187,11 @@ class CustomerDetailController extends Controller
                 if (!$customerDetail->isCompletelyFilled()) {
                     return $this->responseError([], 'Customer details must be completely filled before updating status.', 422);
                 }
+            }
 
-                $getCode = $customerDetail->code;
-                // $this->twilioService->sendSms($customerDetail->phone_number, "Your code to check the status of your repair is: $getCode");
+            if ($validatedData['status'] === 'Cancelled') {
+                $customerDetail->cancel_reason = $validatedData['cancel_reason'];
+                $customerDetail->cancelled_updated_at = now();
             }
 
             $customerDetail->status = $validatedData['status'];
@@ -197,8 +200,8 @@ class CustomerDetailController extends Controller
 
             return $this->responseSuccess($customerDetail, 'Status updated successfully.');
         } catch (Exception $exception) {
-            return $this->responseError([], $exception->getMessage(), $exception->getCode());
-        }
+            return $this->responseError([], $exception->getMessage(), 500); // Always return 500 for unexpected errors
+        }        
     }
 
     public function showStatus(string $code): JsonResponse
@@ -257,6 +260,8 @@ class CustomerDetailController extends Controller
                 'code' => $customerDetailData->code,
                 'description' => $customerDetailData->description,
                 'description_updated_at' => $customerDetailData->description_updated_at,
+                // 'cancel_reason' => $customerDetailData->cancel_reason,
+                // 'cancel_reason_updated_at' => $customerDetailData->cancel_reason_updated_at,
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
@@ -276,6 +281,25 @@ class CustomerDetailController extends Controller
             return response()->json(['error' => 'CustomerDetail not found'], 404);
         }
     }
+
+    // public function cancel_reason(Request $request, $id)
+    // {
+    //     $request->validate([
+    //         'cancel_reason' => 'nullable|string|max:255',
+    //         // 'status' => 'nullable|string|max:255',
+    //     ]);
+
+    //     $repair = CustomerDetail::findOrFail($id);
+    //     $repair->update([
+    //         'cancel_reason' => $request->cancel_reason,
+    //         // 'status' => "Responded",
+    //     ]);
+
+    //     return response()->json([
+    //         'message' => 'Reason updated successfully.',
+    //         'data' => $repair
+    //     ]);
+    // }
 
     public function comment(Request $request, $id)
     {

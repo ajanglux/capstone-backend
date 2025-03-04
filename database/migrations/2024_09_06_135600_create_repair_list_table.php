@@ -19,7 +19,9 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('address', 255);
             $table->longText('description')->nullable();
+            $table->longText('cancel_reason')->nullable();
             $table->string('status')->default('Pending');
+            $table->timestamp('cancel_reason_updated_at')->nullable();
             $table->timestamp('description_updated_at')->nullable();
             $table->timestamp('status_updated_at')->nullable();
             $table->timestamp('on_going_updated_at')->nullable();

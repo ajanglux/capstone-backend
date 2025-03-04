@@ -17,6 +17,8 @@ class CustomerDetail extends Model
         'description',
         'status',
         'comment',
+        'cancel_reason',
+        'cancel_reason_updated_at',
         'admin_comment_updated_at',
         'status_updated_at',
         'on_going_updated_at',
@@ -53,6 +55,10 @@ class CustomerDetail extends Model
             // Check if description is newly added or updated
             if ($customerDetail->isDirty('description') && !is_null($customerDetail->description)) {
                 $customerDetail->description_updated_at = Carbon::now();
+            }
+
+            if ($customerDetail->isDirty('cancel_reason') && !is_null($customerDetail->cancel_reason)) {
+                $customerDetail->cancel_reason_updated_at = Carbon::now();
             }
         });
 

@@ -57,6 +57,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user/profile', [UserController::class, 'fetchUserData']);
     Route::put('/user/profile', [UserController::class, 'updateUserProfile']);
     Route::put('/user/change-email', [UserController::class, 'updateEmail']);
+    Route::put('/user/change-password', [UserController::class, 'changePassword']);
 
     // Service List
     Route::prefix('services')->group(function () {
