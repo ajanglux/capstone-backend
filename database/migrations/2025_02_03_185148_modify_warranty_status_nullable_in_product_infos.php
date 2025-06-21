@@ -7,13 +7,13 @@ use Illuminate\Support\Facades\Schema;
 return new class extends Migration {
     public function up() {
         Schema::table('product_infos', function (Blueprint $table) {
-            $table->string('warranty_status')->nullable()->change();  // Allow NULL values
+            $table->string('warranty_status')->nullable()->change(); 
         });
     }
 
     public function down() {
         Schema::table('product_infos', function (Blueprint $table) {
-            $table->string('warranty_status')->nullable(false)->change();  // Revert if needed
+            $table->string('warranty_status')->nullable(false)->change();
         });
     }
 };

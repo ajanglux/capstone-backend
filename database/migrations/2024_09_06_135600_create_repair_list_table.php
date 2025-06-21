@@ -11,8 +11,7 @@ return new class extends Migration
     {
         Schema::create('customer_details', function (Blueprint $table) {
             $table->id();
-            // $table->unsignedBigInteger('user_id');
-            $table->string('code')->unique(); // unique 'code'
+            $table->string('code')->unique(); 
             $table->string('first_name', 255);
             $table->string('last_name', 255);
             $table->string('phone_number', 20);
@@ -31,10 +30,7 @@ return new class extends Migration
             $table->timestamp('cancelled_updated_at')->nullable();
             $table->timestamp('unrepairable_updated_at')->nullable();
             $table->timestamp('responded_updated_at')->nullable();
-
             $table->timestamps(); 
-
-            // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
 
         Schema::create('product_infos', function (Blueprint $table) {
@@ -45,14 +41,13 @@ return new class extends Migration
             $table->string('serial_number', 20);
             $table->date('purchase_date');
             $table->longText('documentation')->nullable();
+            
             $table->string('warranty_status')->default('warranty');
-
             $table->string('ac_adapter')->nullable();
             $table->string('vga_cable')->nullable();
             $table->string('dvi_cable')->nullable();
             $table->string('display_cable')->nullable();
             $table->string('bag_pn')->nullable();
-
             $table->string('hdd')->nullable();
             $table->string('ram_brand')->nullable();
             $table->string('ram_size_gb')->nullable();

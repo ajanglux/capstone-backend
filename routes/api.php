@@ -27,7 +27,7 @@ Route::get('/verify-email/{id}/{hash}', [VerifyEmailController::class, 'verify']
 ->name('verification.verify');
 
 Route::post('/email/resend', function (Request $request) {
-    $email = $request->input('email'); // Get the email from request
+    $email = $request->input('email');
     $user = \App\Models\User::where('email', $email)->first();
 
     if (!$user) {
@@ -58,6 +58,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/user/profile', [UserController::class, 'updateUserProfile']);
     Route::put('/user/change-email', [UserController::class, 'updateEmail']);
     Route::put('/user/change-password', [UserController::class, 'changePassword']);
+    Route::get('/users/list', [UserController::class, 'getAllUsers']);
 
     // Service List
     Route::prefix('services')->group(function () {

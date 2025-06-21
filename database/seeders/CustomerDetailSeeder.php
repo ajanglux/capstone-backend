@@ -10,12 +10,9 @@ use Carbon\Carbon;
 
 class CustomerDetailSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $users = User::pluck('id'); // Get all user IDs
+        $users = User::pluck('id');
 
         foreach (range(1, 10) as $index) {
             CustomerDetail::create([

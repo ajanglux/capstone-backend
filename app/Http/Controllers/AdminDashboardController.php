@@ -17,14 +17,12 @@ class AdminDashboardController extends Controller
         try {
             $pendingRepairs = CustomerDetail::where('status', 'Pending')->count();
             $ongoingRepairs = CustomerDetail::where('status', 'On-Going')->count();
-            // $totalServices = ServiceList::count();
 
             $totalClients = User::Where('role', '0')->count();
 
             return response()->json([
                 'pendingRepairs' => $pendingRepairs,
                 'ongoingRepairs' => $ongoingRepairs,
-                // 'totalServices' => $totalServices,
                 'totalClients' => $totalClients,
             ], 200);
         } catch (Exception $exception) {

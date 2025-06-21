@@ -35,6 +35,11 @@ class ProductInfo extends Model
         return $this->belongsTo(CustomerDetail::class, 'customer_detail_id');
     }
 
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
+    }
+
     public function setBrandAttribute($value)
     {
         $this->attributes['brand'] = ucfirst(strtolower($value));

@@ -133,7 +133,7 @@ class UserController extends Controller
 
     public function fetchUserData()
     {
-        $user = Auth::user();  // Get authenticated user
+        $user = Auth::user();
 
         if (!$user) {
             return response()->json([
@@ -150,7 +150,7 @@ class UserController extends Controller
                 'phone_number' => $user->phone_number,
                 'address' => $user->address,
                 'birthday' => $user->birthday ? $user->birthday->format('Y-m-d') : null,
-                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null, // Auto-calculate age
+                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null,
             ],
             'message' => 'User Data Successfully Fetched',
         ], 200);
@@ -166,7 +166,7 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone_number' => 'required|digits:11', 
             'address' => 'required|string|max:255',
-            'birthday' => 'required|date|before:today', // Ensure valid date
+            'birthday' => 'required|date|before:today',
         ]);
     
         $user->update($request->only(['first_name', 'last_name', 'email', 'phone_number', 'address', 'birthday']));
@@ -181,7 +181,7 @@ class UserController extends Controller
                 'phone_number' => $user->phone_number,
                 'address' => $user->address,
                 'birthday' => $user->birthday ? $user->birthday->format('Y-m-d') : null,
-                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null, // Auto-calculate age
+                'age' => $user->birthday ? Carbon::parse($user->birthday)->age : null,
             ]
         ], 200);
     }
@@ -194,19 +194,16 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email,' . $user->id,
         ]);
 
-        // Check if the email is actually changing
         if ($request->email === $user->email) {
             return response()->json([
                 'message' => 'The new email must be different from the current email.'
             ], 400);
         }
 
-        // Update email and mark as unverified
         $user->email = $request->email;
         $user->email_verified_at = null;
         $user->save();
 
-        // Trigger email verification
         event(new Registered($user));
 
         return response()->json([
@@ -232,16 +229,22 @@ class UserController extends Controller
             'new_password' => 'required|min:8|confirmed',
         ]);
 
-        // Verify the current password
         if (!Hash::check($request->current_password, $user->password)) {
             return response()->json(['error' => 'Current password is incorrect'], 400);
         }
 
-        // Update password
         $user->password = Hash::make($request->new_password);
         $user->save();
 
         return response()->json(['message' => 'Password changed successfully']);
     }
 
+    public function getAllUsers()
+    {
+        $users = User::all()->filter(function ($user) {
+            return (int)$user->role !== 1;
+        })->values();
+
+        return response()->json($users);
+    }
 }

@@ -42,8 +42,31 @@ class CustomerDetailController extends Controller
     {
         try {
             $user_id = auth()->id();
-            $customerDetails = $this->customerDetailRepository->getUserAll($user_id);
-            return $this->responseSuccess($customerDetails, 'Customer details fetched successfully.');
+
+            $customerDetails = CustomerDetail::with(['productInfos.comments', 'user'])
+                ->where('user_id', $user_id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            $data = $customerDetails->map(function ($detail) {
+                return [
+                    'id' => $detail->id,
+                    'code' => $detail->code,
+                    'status' => $detail->status,
+                    'description' => $detail->description,
+                    'status_updated_at' => $detail->status_updated_at,
+                    'created_at' => $detail->created_at,
+                    'user' => [
+                        'first_name' => $detail->user?->first_name,
+                        'last_name' => $detail->user?->last_name,
+                    ],
+                    'comments' => $detail->productInfos->flatMap(function ($productInfo) {
+                        return $productInfo->comments;
+                    })->sortByDesc('created_at')->values(),
+                ];
+            });
+
+            return $this->responseSuccess($data, 'Customer details fetched successfully.');
         } catch (Exception $exception) {
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
@@ -53,17 +76,14 @@ class CustomerDetailController extends Controller
     {
         $data = $request->validated();
 
-        // Define default values for customer details
         $defaultCustomerDetails = [
-            'status' => 'Pending', // Default status
-            'description' => 'No description provided', // Default description
-            'user_id' => $request->has('user_id') ? $request->user_id : auth()->id(), // Default to logged-in user
+            'status' => 'Pending', 
+            'description' => 'No description provided', 
+            'user_id' => $request->has('user_id') ? $request->user_id : auth()->id(),
         ];
 
-        // Merge default values with incoming request data
         $data = array_merge($defaultCustomerDetails, $data);
 
-        // Extract only the allowed product info fields
         $productInfoData = $request->only([
             'brand', 'model', 'serial_number', 'purchase_date', 'documentation', 'warranty_status',
             'ac_adapter', 'vga_cable', 'dvi_cable', 'display_cable', 'bag_pn',
@@ -73,20 +93,18 @@ class CustomerDetailController extends Controller
         try {
             $customerDetail = $this->customerDetailRepository->create($data);
 
-            // Ensure product info has at least one non-empty value before saving
             if (!empty(array_filter($productInfoData))) { 
 
-                // Assign a default value if serial_number is empty
                 if (empty($productInfoData['serial_number'])) {
                     $productInfoData['serial_number'] = 'N/A';
                 }
 
                 if (empty($productInfoData['purchase_date'])) {
-                    $productInfoData['purchase_date'] = null;  // Set to NULL instead of 'N/A'
+                    $productInfoData['purchase_date'] = null;
                 }         
                 
                 if (empty($productInfoData['warranty_status'])) {
-                    $productInfoData['warranty_status'] = 'Not Specified';  // Set a default value
+                    $productInfoData['warranty_status'] = 'Not Specified';
                 }
                 
                 $productInfo = new ProductInfo($productInfoData);
@@ -200,7 +218,7 @@ class CustomerDetailController extends Controller
 
             return $this->responseSuccess($customerDetail, 'Status updated successfully.');
         } catch (Exception $exception) {
-            return $this->responseError([], $exception->getMessage(), 500); // Always return 500 for unexpected errors
+            return $this->responseError([], $exception->getMessage(), 500);
         }        
     }
 
@@ -236,9 +254,9 @@ class CustomerDetailController extends Controller
         try {
             $user = Auth::user();
 
-            // Retrieve the latest customer detail associated with the user
             $customerDetailData = $user->customerDetail()
-                ->orderBy('created_at', 'desc')  // Ensure it's the most recent inquiry
+                ->with(['productInfos.comments'])
+                ->orderBy('created_at', 'desc')
                 ->first();
 
             if (!$customerDetailData) {
@@ -255,13 +273,19 @@ class CustomerDetailController extends Controller
                 'cancelled_updated_at' => $customerDetailData->cancelled_updated_at,
                 'unrepairable_updated_at' => $customerDetailData->unrepairable_updated_at,
                 'responded_updated_at' => $customerDetailData->responded_updated_at,
-                'comment' => $customerDetailData->comment,
                 'admin_comment_updated_at' => $customerDetailData->admin_comment_updated_at,
-                'code' => $customerDetailData->code,
                 'description' => $customerDetailData->description,
                 'description_updated_at' => $customerDetailData->description_updated_at,
-                // 'cancel_reason' => $customerDetailData->cancel_reason,
-                // 'cancel_reason_updated_at' => $customerDetailData->cancel_reason_updated_at,
+                'code' => $customerDetailData->code,
+
+                'productInfos' => $customerDetailData->productInfos->map(function ($productInfo) {
+                    return [
+                        'id' => $productInfo->id,
+                        'brand' => $productInfo->brand,
+                        'model' => $productInfo->model,
+                        'comments' => $productInfo->comments,
+                    ];
+                }),
             ], 'Customer status fetched successfully.');
         } catch (ModelNotFoundException $exception) {
             return $this->responseError([], 'Customer detail not found.', 404);
@@ -282,41 +306,21 @@ class CustomerDetailController extends Controller
         }
     }
 
-    // public function cancel_reason(Request $request, $id)
-    // {
-    //     $request->validate([
-    //         'cancel_reason' => 'nullable|string|max:255',
-    //         // 'status' => 'nullable|string|max:255',
-    //     ]);
-
-    //     $repair = CustomerDetail::findOrFail($id);
-    //     $repair->update([
-    //         'cancel_reason' => $request->cancel_reason,
-    //         // 'status' => "Responded",
-    //     ]);
-
-    //     return response()->json([
-    //         'message' => 'Reason updated successfully.',
-    //         'data' => $repair
-    //     ]);
-    // }
-
     public function comment(Request $request, $id)
     {
         $request->validate([
-            'comment' => 'nullable|string|max:255',
-            // 'status' => 'nullable|string|max:255',
+            'comment' => 'required|string|max:255',
         ]);
 
-        $repair = CustomerDetail::findOrFail($id);
-        $repair->update([
+        $productInfo = ProductInfo::findOrFail($id);
+
+        $comment = $productInfo->comments()->create([
             'comment' => $request->comment,
-            // 'status' => "Responded",
         ]);
 
         return response()->json([
-            'message' => 'Comment updated successfully.',
-            'data' => $repair
+            'message' => 'Comment added successfully.',
+            'data' => $comment
         ]);
     }
 
@@ -348,5 +352,4 @@ class CustomerDetailController extends Controller
             return $this->responseError([], $exception->getMessage(), $exception->getCode());
         }
     }
-
 }

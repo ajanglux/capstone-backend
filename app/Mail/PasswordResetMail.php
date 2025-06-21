@@ -18,7 +18,7 @@ class PasswordResetMail extends Mailable
     public function build()
     {
         return $this->subject('Password Reset')
-                    ->text('emails.password_reset') // Use a plain text file instead of Blade
+                    ->text('emails.password_reset')
                     ->with([
                         'resetUrl' => $this->resetUrl,
                     ]);

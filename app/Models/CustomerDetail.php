@@ -16,10 +16,8 @@ class CustomerDetail extends Model
         'user_id',
         'description',
         'status',
-        'comment',
         'cancel_reason',
         'cancel_reason_updated_at',
-        'admin_comment_updated_at',
         'status_updated_at',
         'on_going_updated_at',
         'finished_updated_at',
@@ -30,12 +28,19 @@ class CustomerDetail extends Model
         'responded_updated_at',
     ];
 
-    /**
-     * Get the user that owns the customer details.
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+        public function productInfos()
+    {
+        return $this->hasMany(ProductInfo::class, 'customer_detail_id');
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
     protected static function booted()
@@ -47,12 +52,11 @@ class CustomerDetail extends Model
         });
 
         static::saving(function ($customerDetail) {
-            // Check if comment is newly added or updated
+           
             if ($customerDetail->isDirty('comment') && !is_null($customerDetail->comment)) {
                 $customerDetail->admin_comment_updated_at = Carbon::now();
             }
 
-            // Check if description is newly added or updated
             if ($customerDetail->isDirty('description') && !is_null($customerDetail->description)) {
                 $customerDetail->description_updated_at = Carbon::now();
             }
@@ -65,11 +69,6 @@ class CustomerDetail extends Model
         static::updating(function ($customerDetail) {
             $customerDetail->updateStatusTimestamps();
         });
-    }
-
-    public function productInfos()
-    {
-        return $this->hasMany(ProductInfo::class, 'customer_detail_id');
     }
 
     public function updateStatusTimestamps()

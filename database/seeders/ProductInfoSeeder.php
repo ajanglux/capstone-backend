@@ -10,12 +10,9 @@ use Illuminate\Support\Str;
 
 class ProductInfoSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        $customerDetails = CustomerDetail::pluck('id'); // Get all customer detail IDs
+        $customerDetails = CustomerDetail::pluck('id');
 
         foreach (range(1, 10) as $index) {
             ProductInfo::create([

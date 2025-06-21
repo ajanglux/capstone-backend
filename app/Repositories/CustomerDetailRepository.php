@@ -9,14 +9,12 @@ class CustomerDetailRepository implements CustomerDetailInterface
 {
     public function getAll(): array
     {
-        // Eager load the user relationship when fetching all customer details
-        return CustomerDetail::with('user')->get()->toArray();
+        return CustomerDetail::with(['user', 'productInfos.comments'])->get()->toArray();
     }
 
     public function getUserAll(int $id): array
     {
 
-        // Eager load the user relationship when fetching all customer details
         return CustomerDetail::Where('user_id', $id)->with('user')->get()->toArray();
     }
 

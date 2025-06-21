@@ -13,16 +13,15 @@ class VerifyEmail extends BaseVerifyEmail
      */
     public function toMail($notifiable)
     {
-        // Use $notifiable instead of $user
         $url = URL::signedRoute('verification.verify', [
-            'id' => $notifiable->getKey(), // Get the user's ID
-            'hash' => sha1($notifiable->getEmailForVerification()) // Generate the email hash
+            'id' => $notifiable->getKey(),
+            'hash' => sha1($notifiable->getEmailForVerification())
         ]);
 
         return (new MailMessage)
             ->subject('Verify Your Email Address')
             ->line('Click the button below to verify your email.')
-            ->action('Verify Email', $url)  // Ensure it uses the correct API route
+            ->action('Verify Email', $url)
             ->line('If you did not create an account, no further action is required.');
     }
 }

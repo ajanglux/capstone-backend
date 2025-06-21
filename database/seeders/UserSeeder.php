@@ -7,19 +7,15 @@ use App\Models\User;
 
 class UserSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Create an Admin User
         User::updateOrCreate(
-            ['email' => 'admin@example.com'],
+            ['email' => 'admin@gmail.com'],
             [
                 'first_name' => 'Admin',
                 'last_name' => 'User',
                 'password' => bcrypt('password123'),
-                'role' => 0, // Admin role
+                'role' => 1,
                 'phone_number' => '09123456789',
                 'address' => '123 Admin Street, City',
                 'remember_token' => null,
@@ -27,7 +23,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        // Create 20 Random Users using Factory
         User::factory()->count(10)->create();
     }
 }
