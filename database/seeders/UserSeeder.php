@@ -23,6 +23,18 @@ class UserSeeder extends Seeder
             ]
         );
 
-        User::factory()->count(10)->create();
+        User::updateOrCreate(
+            ['email' => 'aj@gmail.com'],
+            [
+                'first_name' => 'Allyssa',
+                'last_name' => 'User',
+                'password' => bcrypt('password123'),
+                'role' => 0,
+                'phone_number' => '09123456781',
+                'address' => '123 Admin Street, City',
+                'remember_token' => null,
+                'email_verified_at' => now(),
+            ]
+        );
     }
 }

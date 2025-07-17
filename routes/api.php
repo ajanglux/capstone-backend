@@ -10,6 +10,7 @@ use App\Http\Controllers\AdminDashboardController;
 use Illuminate\Foundation\Auth\EmailVerificationRequest;
 use App\Http\Controllers\VerifyEmailController;
 use App\Models\User;
+use App\Http\Controllers\PageViewController;
 
 // Emails
 Route::post('user/forgot-password', [UserController::class, 'forgotPassword']);
@@ -96,6 +97,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin Dashboard
     Route::get('admin-dashboard-stats', [AdminDashboardController::class, 'getDashboardStats'])->name('admin-dashboard.stats');
     Route::get('admin-dashboard-stats/completed-repairs', [AdminDashboardController::class, 'getMonthlyCompletedRepairs'])->name('admin-dashboard.completed-repairs');
+
 });
 
 // Publicly access for services
@@ -109,3 +111,7 @@ Route::get('customer-details/status/{code}', [CustomerDetailController::class, '
 // User registration and login
 Route::post('user/register', [UserController::class, 'store'])->name('user.register');
 Route::post('user/login', [UserController::class, 'auth'])->name('user.login');
+
+// Page view
+Route::post('/track-view', [PageViewController::class, 'track']);
+Route::get('/track-view/{page}', [PageViewController::class, 'get']);
